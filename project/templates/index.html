@@ -1,15 +1,17 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Streaming Service</title>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
 </head>
 <body style="margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;">
     <div class="sidebar">
         <div class="logo-container">
-            <img src="Images\logo.png" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            <img src="{% static 'Images\logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
         </div>
 
         <!-- Welcome User -->
@@ -76,7 +78,7 @@
             <section style=" margin-top:0px; padding:0px; overflow-x:auto; white-space:nowrap;">
                 <!-- Artist Card -->
                 <div class="artist-card">
-                    <img src="Images\YOASOBIlogo.jpg" style="width:150px; height:150px; border-radius:50%;">
+                    <img src="{% static 'Images\YOASOBIlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
                     <div class="artist-info">
                         <div class="artist-name">YOASOBI</div>
                         <div class="artist-title">Artist</div>
@@ -85,7 +87,7 @@
 
 
                 <div class="artist-card">
-                    <img src="Images\TaylorSwiftlogo.jpg" style="width:150px; height:150px; border-radius:50%;">
+                    <img src="{% static 'Images\TaylorSwiftlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
                     <div class="artist-info">
                         <div class="artist-name">Taylor Swift</div>
                         <div class="artist-title">Artist</div>
@@ -94,7 +96,7 @@
 
 
                 <div class="artist-card">
-                    <img src="Images\YonezuKenshilogo.jpg" style="width:150px; height:150px; border-radius:50%;">
+                    <img src="{% static 'Images\YonezuKenshilogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
                     <div class="artist-info">
                         <div class="artist-name">Yonezu Kenshi</div>
                         <div class="artist-title">Artist</div>
@@ -103,7 +105,7 @@
 
 
                 <div class="artist-card">
-                    <img src="Images\ILLITlogo.jpg" style="width:150px; height:150px; border-radius:50%;">
+                    <img src="{% static 'Images\ILLITlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
                     <div class="artist-info">
                         <div class="artist-name">ILLIT</div>
                         <div class="artist-title">Artist</div>
@@ -112,7 +114,7 @@
 
 
                 <div class="artist-card">
-                    <img src="Images\TWICElogo.jpg" style="width:150px; height:150px; border-radius:50%;">
+                    <img src="{% static 'Images\TWICElogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
                     <div class="artist-info">
                         <div class="artist-name">TWICE</div>
                         <div class="artist-title">Artist</div>
@@ -121,7 +123,7 @@
 
 
                 <div class="artist-card">
-                    <img src="Images\AlanWalkerlogo.jpg" style="width:150px; height:150px; border-radius:50%;">
+                    <img src="{% static 'Images\AlanWalkerlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
                     <div class="artist-info">
                         <div class="artist-name">Alan Walker</div>
                         <div class="artist-title">Artist</div>
@@ -130,7 +132,7 @@
 
 
                 <div class="artist-card">
-                    <img src="Images\IUlogo.jpg" style="width:150px; height:150px; border-radius:50%;">
+                    <img src="{% static 'Images\IUlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
                     <div class="artist-info">
                         <div class="artist-name">IU</div>
                         <div class="artist-title">Artist</div>
@@ -146,7 +148,7 @@
 
           <div class="browse-all">
             <div class="category-card">
-                <img src="Images\IUlogo.jpg" alt="Podcasts">
+                <img src="{% static 'Images\IUlogo.jpg' %}" alt="Podcasts">
                 <div class="category-title">New Releases</div>
               </div>
 
@@ -156,22 +158,22 @@
               </div>
             
             <div class="category-card">
-                <img src="Images\TWICElogo.jpg" alt="Podcasts">
+                <img src="{% static 'Images\TWICElogo.jpg' %}" alt="Podcasts">
                 <div class="category-title">K-Pop</div>
               </div>
 
             <div class="category-card">
-                <img src="Images\JayChoulogo.jpg" alt="Podcasts">
+                <img src="{% static 'Images\JayChoulogo.jpg' %}" alt="Podcasts">
                 <div class="category-title">Chinese Mix</div>
               </div>
             
             <div class="category-card">
-                <img src="Images\YonezuKenshilogo.jpg" alt="Podcasts">
+                <img src="{% static 'Images\YonezuKenshilogo.jpg' %}" alt="Podcasts">
                 <div class="category-title">J-Pop</div>
               </div>
             
             <div class="category-card">
-                <img src="Images\AlanWalkerlogo.jpg" alt="Podcasts">
+                <img src="{% static 'Images\AlanWalkerlogo.jpg' %}" alt="Podcasts">
                 <div class="category-title">EDM</div>
               </div>
         </div>
