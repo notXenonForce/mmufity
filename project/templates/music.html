@@ -1,17 +1,19 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Streaming Service</title>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
 </head>
 <body style="margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;">
     <!-- Sidebar remains unchanged -->
     <div class="sidebar">
         <!-- Spotify Logo -->
         <div class="logo-container">
-            <img src="Images\logo.png" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            <img src="{% static 'Images\logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
         </div>
 
         <!-- Top section of the sidebar -->
@@ -53,7 +55,7 @@
     <div class="music-player" style="margin-left:240px; padding:20px; display: flex; justify-content: center; align-items: center; height: calc(100vh - 90px);">
         <!-- Music Player Interface -->
         <div class="player-container">
-            <img class="album-cover" src="Images/IUlogo.jpg" alt="Album Cover">
+            <img class="album-cover" src="{% static 'Images/IUlogo.jpg' %}" alt="Album Cover">
             <div class="song-info">
                 <h2 class="song-title">Song Name</h2>
                 <h3 class="artist-name">Artist Name</h3>
@@ -72,7 +74,7 @@
             </div>
         </div>
     
-        <audio id="audio-player" src="audio-source-url"></audio>
+        <audio id="audio-player" src="{% static 'audio-source-url' %}"></audio>
     </div>
 </body>
 </html>

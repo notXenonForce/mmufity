@@ -77,9 +77,13 @@ WSGI_APPLICATION = 'musicproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+       'ENGINE': 'django.db.backends.postgresql',
+       'NAME': 'defaultdb',
+       'USER': 'avnadmin',
+       'PASSWORD': 'AVNS_NEWUHRbM3Cc5QKeCGZ9',
+       'HOST': 'mmufity-mmufity.k.aivencloud.com',
+       'PORT': '24028',
+   }
 }
 
 

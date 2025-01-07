@@ -1,10 +1,12 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Artist Profile</title>
-  <link rel="stylesheet" type="text/css" href="profile-style.css" />
+  <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
   <style>
 
@@ -23,7 +25,7 @@
   <div class="sidebar">
     <!-- Spotify Logo -->
     <div class="logo-container">
-        <img src="Images/logo.png" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+        <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
     </div>
 
 
@@ -69,7 +71,7 @@
     <!-- Artist Header -->
     <div class="relative">
       <!-- Increased height with inline style -->
-      <img src="Images/IUprofile.jpg" style="height: 600px; object-fit: cover; width: 100%;">
+      <img src="{% static 'Images/IUprofile.jpg' %}" style="height: 600px; object-fit: cover; width: 100%;">
       <div class="absolute bottom-0 p-5 w-full" style="background: rgba(0, 0, 0, 0.5);">
         <div class="flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
@@ -91,7 +93,7 @@
         <!-- Single Track Row -->
         <div class="flex justify-between items-center py-3">
           <div class="flex items-center space-x-4">
-            <img src="Images/IUlogo.jpg" alt="Song Image" class="w-12 h-12">
+            <img src="{% static 'Images/IUlogo.jpg' %}" alt="Song Image" class="w-12 h-12">
             <div>
               <p class="text-base font-medium">Love wins all</p>
               <p class="text-xs text-gray-400">IU</p>
