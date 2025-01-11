@@ -5,16 +5,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Artist Signup</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-black h-screen flex flex-col items-center justify-center">
   <div class="w-full max-w-xs px-6">
     <div class="mb-10 flex flex-col items-center">
       <img src="{% static 'Images\logo.png' %}" class="w-auto h-14">
-      <h1 class="text-3xl text-white font-bold mt-2">Music Sharing App</h1>
+      <h1 class="text-3xl text-white font-bold mt-2">Artist Sign Up</h1>
     </div>
-
     <div>
       <style>
         h5{
@@ -26,20 +25,23 @@
       {% endfor %}
     </div>
 
-    <form action="" method="POST" class="bg-black">
+    <form method="POST" action="" class="bg-black">
       {% csrf_token %}
       <div class="mb-4">
         <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-4 block w-full appearance-none leading-normal" type="text" name="username" placeholder="Username">
       </div>
+      <div class="mb-4">
+        <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-4 block w-full appearance-none leading-normal" type="email" name="email" placeholder="Email">
+      </div>
       <div class="mb-6">
         <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-4 block w-full appearance-none leading-normal" type="password" name="password" placeholder="Password">
       </div>
-      <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full mb-4">Sign In</button>
+      <div class="mb-6">
+        <input class="bg-gray-800 text-white border border-gray-600 rounded py-2 px-4 block w-full appearance-none leading-normal" type="password" name="password2" placeholder="Repeat Password">
+      </div>
+      <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full mb-4">Register</button>
       <p class="text-center text-gray-400 text-xs">
-        Don't have an account?<a href="/signup_user" class="text-blue-500"> Sign up</a>
-      </p>
-      <p class="text-center text-gray-400 text-xs">
-        Are you an artist?<a href="/signup_artist" class="text-blue-500"> Sign in</a>
+        Already have an account?<a href="/login" class="text-blue-500"> Sign in</a>
       </p>
     </form>
 

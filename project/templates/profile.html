@@ -28,7 +28,18 @@
         <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
     </div>
 
+    <!-- Welcome User -->
+    <div class="sidebar-section">
+      <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
+      <b>Welcome, {{user.username}}</b>
+      <br>
+      <br>
 
+      <a href="/logout">
+          <span class="sidebar-link-icon">↪️</span>
+          <b>Logout</b>
+      </a>
+  </div>
 
     <!-- Top section of the sidebar -->
     <div class="sidebar-section">

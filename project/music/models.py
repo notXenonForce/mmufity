@@ -14,7 +14,7 @@ class UserAccount(models.Model):
     def __str__(self):
         return self.username
 
-    class Meta:
+    class Meta: # <--- Corrected Indentation here
         db_table = 'user_accounts'  # Links to the database table
 
 
@@ -31,5 +31,6 @@ class ArtistAccount(models.Model):
     def __str__(self):
         return self.username
 
-    class Meta:
+    class Meta: # <--- Corrected Indentation here
         db_table = 'artist_accounts'
+
