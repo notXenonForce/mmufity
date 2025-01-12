@@ -34,3 +34,17 @@ class ArtistAccount(models.Model):
     class Meta: # <--- Corrected Indentation here
         db_table = 'artist_accounts'
 
+class Music(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    artist = models.ForeignKey(ArtistAccount, on_delete=models.CASCADE)
+    music_name = models.CharField(max_length=255)
+    music_genre = models.CharField(max_length=100)
+    music_date = models.DateField()
+    audio_file = models.FileField(upload_to='music/')
+    upload_date = models.DateTimeField(auto_now_add=True) # Added field for when the song was uploaded
+
+    def __str__(self):
+        return f"{self.music_name} - {self.artist.username}"
+
+    class Meta:
+        db_table = 'music'
