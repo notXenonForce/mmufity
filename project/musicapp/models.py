@@ -40,7 +40,7 @@ class Music(models.Model):
     music_name = models.CharField(max_length=255)
     music_genre = models.CharField(max_length=100)
     music_date = models.DateField()
-    audio_file = models.FileField(upload_to='music/')
+    audio_file = models.FileField(upload_to='media/')
     upload_date = models.DateTimeField(auto_now_add=True) # Added field for when the song was uploaded
 
     def __str__(self):

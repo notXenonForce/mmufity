@@ -1,0 +1,80 @@
+Pseudocode for documentation:
+
+Login module:
+
+Start
+Input username, password
+if Database.UsernameExists(username):
+  hashed_password = retrieve_hashed_password(username)
+  if verify_password(password, hashed_password):
+    accType = Database.GetAccType(Username)
+    token = generate_session_token(username)
+    Output "Login successful"
+    Return token, accType
+  else:
+    Output "Invalid credentials"
+    End
+else:
+  Output "Invalid credentials"
+  End
+
+User registration module:
+
+Start
+Input username, password, email, repeatPassword
+if Database.UsernameExists(username) OR Database.EmailExists(email):
+  Output "Username or email already exists"
+  End
+if password != repeatPassword:
+  Output "Passwords do not match"
+  End
+hashedPassword = HashPassword(password)
+userData = CreateUserDataObject(username, email, hashedPassword)
+Database.SaveUser(userData)
+Output "Registration successful"
+End
+
+User data module:
+
+Start
+If operation = "Save or Update Profile":
+  Input user_details (username, email, preferences, relationships)
+  Validate data integrity
+  Database.SaveOrUpdate("Users", userDetails)
+Else if operation = "Fetch Profile":
+  Input user_id or username
+  user_data = fetch_user_data(user_id or username)
+  Return user_data
+End
+
+Music catalog module:
+
+Start
+If operation = "Save Metadata":
+  Input music_details (title, artist, album)
+  Validate data integrity
+  Save music_details in database
+Else if operation = "Fetch Metadata":
+  Input search_criteria (title, artist, genre)
+  searchResults = Database.Search("Music", searchCriteria)
+  Return music_metadata
+End
+
+Playlist module:
+
+Start
+If operation is "Create Playlist":
+  Input playlist_name, user_id
+  IF Database.PlaylistNameExistsForUser(playlistName, userId):
+    Output "Playlist name already exists for this user."
+    End
+  Save playlist_name and description to database
+Else if operation is "Add Track to Playlist":
+  Input playlist_id, track_id
+  Validate playlist_id and track_id existence
+  Add track_id to playlist's track list
+Else if operation is "Retrieve Playlist":
+  Input playlist_id
+  playlist_details = fetch_playlist_details(playlist_id)
+  Return playlist_details
+End

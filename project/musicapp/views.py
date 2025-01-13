@@ -12,6 +12,8 @@ def is_artist(user):
 def is_admin(user):
   return user.is_staff and user.is_superuser # Admins are is_staff and is_superuser
 
+def music(request):
+    return render(request, 'music.html')
 
 @login_required(login_url='login')
 def index(request):

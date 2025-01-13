@@ -1,108 +1,238 @@
+/* Artist Overlay */
 .artist-overlay {
-    background: rgba(0, 0, 0, 0.7);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: end;
-    padding: 2rem;
+  background: rgba(0, 0, 0, 0.7);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  padding: 2rem;
+}
+
+.artist-info {
+  color: white;
+}
+
+.verified-badge {
+  color: #1DB954;
+}
+
+/* Upload Popup Overlay */
+.upload-popup-overlay {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+/* Upload Popup Container */
+.upload-popup {
+  background: #1a1a1a;
+  border-radius: 10px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
+  animation: scaleIn 0.3s ease-in-out;
+  text-align: center;
+}
+
+/* Upload Popup Header */
+.upload-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.upload-popup-header h2 {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  color: #cccccc;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: #333333;
+  color: white;
+}
+
+/* Submit Button */
+.submit-button {
+  width: 100%;
+  background: #1d5bb9;
+  color: white;
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.submit-button:hover {
+  background: #174994;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  background-color: #000;
+  width: 240px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  color: #b3b3b3;
+  font-size: 14px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  padding: 5px 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background-color: #282828;
+}
+
+.sidebar-section {
+  background: #181818;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 9px;
+}
+
+/* Sidebar Link Styles */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  transition: color 0.3s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  color: #fff;
+}
+
+.sidebar-link-icon {
+  margin-right: 15px;
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+}
+
+.sidebar-link-text {
+  flex-grow: 1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .artist-info {
-    color: white;
+  to {
+    opacity: 1;
   }
-  
-  .verified-badge {
-    color: #1DB954;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
   }
-  
-  /* Responsive Design */
-  @media (min-width: 768px) {
-    .sidebar {
-      flex-basis: 250px;
-      flex-shrink: 0;
-    }
-  
-    .main-content {
-      flex-grow: 1;
-    }
+  to {
+    transform: scale(1);
   }
-  
-  
-  
-   /* Sidebar Styles */
-   .sidebar {
-    background-color: #000;
-    width: 240px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Navigation Sidebar Styles */
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
   .sidebar {
-    color: #b3b3b3;
-    padding: 25px 10px;
-    font-size: 14px;
+    flex-basis: 250px;
+    flex-shrink: 0;
   }
-  
-  .sidebar a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    padding: 5px 15px;
-    margin: 10px 0;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .sidebar a:hover,
-  .sidebar a.active {
-    background-color: #282828;
-  }
-  
-  /* Sidebar Styles */
-  
-  
-  /* Sidebar Bottom Section Styles */
-  .sidebar-section {
-    background: #181818;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 9px;
-    overflow: hidden;
-  }
-  
-  .sidebar-link {
-    color: #b3b3b3;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    transition: color 0.3s;
-  }
-  
-  .sidebar-link:hover,
-  .sidebar-link.active {
-    color: #fff;
-  }
-  
-  .sidebar-link-icon {
-    margin-right: 15px;
-    display: inline-block;
-    width: 24px; /* Adjust size as needed */
-    text-align: center;
-  }
-  
-  .sidebar-link-text {
+
+  .main-content {
     flex-grow: 1;
   }
-  
-  .sidebar-link-subtext {
-    margin-left: 10px;
-    background-color: #b3b3b3;
-    color: #000;
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-size: 12px;
-    text-transform: uppercase;
-  }
+}
+#album {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: #333333;
+  color: white;
+  appearance: none; 
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+#album:focus {
+  outline: none;
+  border: 1px solid #1d5bb9;
+}
+
+#album option {
+  background: #1a1a1a;
+  color: white;
+}
+
+#genre {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: #333333;
+  color: white;
+  appearance: none; 
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+#genre:focus {
+  outline: none;
+  border: 1px solid #1d5bb9;
+}
+
+#genre option {
+  background: #1a1a1a;
+  color: white;
+}

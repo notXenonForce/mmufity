@@ -33,7 +33,6 @@
       <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
       <b>Welcome, {{user.username}}</b>
       <br>
-      <br>
 
       <a href="/logout">
           <span class="sidebar-link-icon">↪️</span>
@@ -47,10 +46,10 @@
             <span class="sidebar-link-icon">🏠</span>
             Home
         </a>
-        <a href="#" class="sidebar-link">
-            <span class="sidebar-link-icon">🔍</span>
-            Search
-        </a>
+        <a href="#" class="sidebar-link" id="upload-link">
+          <span class="sidebar-link-icon">🔍</span>
+          Upload
+      </a>
         <a href="#" class="sidebar-link">
             <span class="sidebar-link-icon">🎵</span>
             Your Library
@@ -92,10 +91,8 @@
           <span class="text-sm text-gray-300 ml-1">Verified Artist</span>
         </div>
         <h1 class="text-5xl font-bold text-white mt-2">IU</h1>
-        <p class="text-gray-300">33,675,633 monthly listeners</p>
       </div>
     </div>
-    
     
     <!-- Popular Tracks Section -->
     <div class="p-5">
@@ -110,7 +107,6 @@
               <p class="text-xs text-gray-400">IU</p>
             </div>
           </div>
-          <div class="text-gray-400">1,182,474,314</div>
           <div class="text-gray-400">3:59</div>
         </div>
         <!-- Repeat for other tracks -->
@@ -119,6 +115,68 @@
     </div>
     
   </div>
+
+  <!-- Upload Song Pop-up -->
+  <div id="uploadPopupOverlay" class="upload-popup-overlay">
+    <div class="upload-popup">
+      <div class="upload-popup-header">
+        <h2>Upload Song</h2>
+        <button id="closePopup" class="close-button">×</button>
+      </div>
+      <form id="uploadForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+          <label for="album">Album</label>
+          <select id="album" name="album" required>
+            <option value="" disabled selected>Select an album</option>
+            {% for album in albums %}
+              <option value="{{ album.id }}">{{ album.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="genre">Genre</label>
+          <select id="genre" name="genre" required>
+            <option value="" disabled selected>Select a genre</option>
+            {% for genre in genres %}
+              <option value="{{ genre.id }}">{{ genre.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="audioFile">Audio File</label>
+          <input type="file" id="audioFile" name="audio_file" accept=".mp3, .wav, .flac" required>
+        </div>
+        <button type="submit" class="submit-button">Upload</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const uploadLink = document.getElementById('upload-link');
+    const uploadPopupOverlay = document.getElementById('uploadPopupOverlay');
+    const closePopup = document.getElementById('closePopup');
+
+    uploadLink.addEventListener('click', (event) => {
+      event.preventDefault(); // Prevent default link behavior
+      uploadPopupOverlay.style.display = 'flex'; // Show the pop-up
+    });
+
+    closePopup.addEventListener('click', () => {
+      uploadPopupOverlay.style.display = 'none'; // Hide the pop-up
+    });
+
+    // Close the pop-up if the user clicks outside of it
+    window.addEventListener('click', (event) => {
+      if (event.target === uploadPopupOverlay) {
+        uploadPopupOverlay.style.display = 'none';
+      }
+    });
+  </script>
 
 </body>
 </html>
