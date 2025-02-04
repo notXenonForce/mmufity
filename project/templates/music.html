@@ -74,11 +74,7 @@
             </div>
         </div>
     
-        <audio id="audio-player" controls>
-            <source src="{{ your_song_object.audio_file.url }}" type="audio/mp3">
-            <source src="{{ your_song_object.audio_file.url }}" type="audio/mp4">
-            Your browser does not support the audio element.
-        </audio>
+        <audio id="audio-player" src="{% static 'audio-source-url' %}"></audio>
     </div>
 </body>
 </html>

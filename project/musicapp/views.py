@@ -146,6 +146,7 @@ def artist_home(request):
                 messages.error(request, e)  # Display validator error message.
         else:
             messages.error(request, "There are problems with your submission")
+            return redirect('artist_home')  # Redirect to a success page
 
     else:
         form = UploadSongForm()  # Create an unbound form
