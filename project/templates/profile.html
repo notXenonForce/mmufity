@@ -77,7 +77,7 @@
 
   <!-- Main Content -->
   <div class="flex-1">
-      
+
     <!-- Artist Header -->
     <div class="relative">
       <!-- Increased height with inline style -->
@@ -93,7 +93,7 @@
         <h1 class="text-5xl font-bold text-white mt-2">IU</h1>
       </div>
     </div>
-    
+
     <!-- Popular Tracks Section -->
     <div class="p-5">
       <h2 class="text-2xl font-bold mb-4">Songs</h2>
@@ -113,48 +113,39 @@
       </div>
       <!-- <a href="#" class="text-green-500 text-sm">See more</a> -->
     </div>
-    
+
   </div>
 
-  <!-- Upload Song Pop-up -->
-  <div id="uploadPopupOverlay" class="upload-popup-overlay">
-    <div class="upload-popup">
-      <div class="upload-popup-header">
-        <h2>Upload Song</h2>
-        <button id="closePopup" class="close-button">×</button>
+    <!-- Upload Song Pop-up -->
+    <div id="uploadPopupOverlay" class="upload-popup-overlay">
+      <div class="upload-popup">
+        <div class="upload-popup-header">
+          <h2>Upload Song</h2>
+          <button id="closePopup" class="close-button">×</button>
+        </div>
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="music_name" required>
+          </div>
+          <div class="form-group">
+            <label for="album">Album</label>
+            <select id="album" name="album" required>
+              <option value="" disabled selected>Select an album</option>
+              {% for album in albums %}
+                <option value="{{ album.id }}">{{ album.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="audioFile">Audio File</label>
+            <input type="file" id="audioFile" name="audio_file" accept=".mp3" required>
+          </div>
+          <button type="submit" class="submit-button">Upload</button>
+        </form>
       </div>
-      <form id="uploadForm" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input type="text" id="title" name="title" required>
-        </div>
-        <div class="form-group">
-          <label for="album">Album</label>
-          <select id="album" name="album" required>
-            <option value="" disabled selected>Select an album</option>
-            {% for album in albums %}
-              <option value="{{ album.id }}">{{ album.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="genre">Genre</label>
-          <select id="genre" name="genre" required>
-            <option value="" disabled selected>Select a genre</option>
-            {% for genre in genres %}
-              <option value="{{ genre.id }}">{{ genre.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="audioFile">Audio File</label>
-          <input type="file" id="audioFile" name="audio_file" accept=".mp3, .wav, .flac" required>
-        </div>
-        <button type="submit" class="submit-button">Upload</button>
-      </form>
     </div>
-  </div>
 
   <script>
     const uploadLink = document.getElementById('upload-link');

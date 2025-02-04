@@ -3,7 +3,10 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import User, auth
 from django.contrib.auth.decorators import login_required, user_passes_test
-
+from .forms import UploadSongForm # Import your form
+from .models import Music, Album, ArtistAccount # Import your model
+from .validators import validate_audio_file  # Import the validator
+from django.core.exceptions import ValidationError
 
 # Helper functions for user type checks
 def is_artist(user):
@@ -76,7 +79,7 @@ def signup_artist(request):
         username = request.POST['username']
         password = request.POST['password']
         password2 = request.POST['password2']
-        
+
 
         if password == password2:
             if User.objects.filter(email=email).exists():
@@ -112,4 +115,47 @@ def admin_home(request):
 @login_required
 @user_passes_test(is_artist)
 def artist_home(request):
-    return render(request, 'profile.html')
+    #We can add an exception handling to avoid the code from crashing
+    try:
+        #Get "New Album 1" through filtering and obtain the first data.
+        new_album_1 = Album.objects.filter(name="New Album 1")[0]
+    except Exception as e:
+        #if the album doesnt exist, then create the model
+        new_album_1 = Album.objects.create(name = "New Album 1")
+    
+    if request.method == 'POST':
+        form = UploadSongForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                # Validate the file using your custom validator
+                validate_audio_file(request.FILES['audio_file'])
+
+                # If validation passes, save the form
+                new_song = form.save(commit=False)  # Don't save to the database yet
+
+                #Getting the ArtistAccount associated with the logged in user:
+                artist_account = ArtistAccount.objects.get(username=request.user.username)
+                new_song.artist = artist_account   # Access ArtistAccount through user
+                new_song.album = new_album_1
+                new_song.save()  # Save the song to the database
+                messages.success(request, 'Song uploaded successfully!')
+                return redirect('artist_home')  # Redirect to a success page
+            except ValidationError as e:
+                # If validation fails, add an error to the form
+                form.add_error('audio_file', e)
+                messages.error(request, e)  # Display validator error message.
+        else:
+            messages.error(request, "There are problems with your submission")
+
+    else:
+        form = UploadSongForm()  # Create an unbound form
+
+    # Get all albums and genres for dropdowns
+    albums = Album.objects.all()
+
+    context = {
+        'form': form,
+        'albums': Album.objects.all(),
+    }
+
+    return render(request, 'profile.html', context)

@@ -1,3 +1,5 @@
+# models.py
+
 from django.db import models
 from django.contrib.auth.hashers import make_password
 
@@ -34,13 +36,20 @@ class ArtistAccount(models.Model):
     class Meta: # <--- Corrected Indentation here
         db_table = 'artist_accounts'
 
+class Album(models.Model):
+    name = models.CharField(max_length=255)
+    # Other album related fields
+
+    def __str__(self):
+        return self.name
+
 class Music(models.Model):
     id = models.BigAutoField(primary_key=True)
     artist = models.ForeignKey(ArtistAccount, on_delete=models.CASCADE)
+    album = models.ForeignKey(Album, on_delete=models.SET_NULL, blank=True, null=True)
     music_name = models.CharField(max_length=255)
-    music_genre = models.CharField(max_length=100)
     music_date = models.DateField()
-    audio_file = models.FileField(upload_to='media/')
+    audio_file = models.FileField(upload_to='media/', validators=[])
     upload_date = models.DateTimeField(auto_now_add=True) # Added field for when the song was uploaded
 
     def __str__(self):
