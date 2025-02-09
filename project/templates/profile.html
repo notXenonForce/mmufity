@@ -6,8 +6,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Artist Profile</title>
-  <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
   <style>
 
     .artist-header {
@@ -40,7 +40,7 @@
       </a>
   </div>
 
-    <!-- Top section of the sidebar -->
+    <!-- Top Sidebar -->
     <div class="sidebar-section">
         <a href="#" class="sidebar-link active">
             <span class="sidebar-link-icon">🏠</span>
@@ -48,30 +48,12 @@
         </a>
         <a href="#" class="sidebar-link" id="upload-link">
           <span class="sidebar-link-icon">🔍</span>
-          Upload
+          Upload Songs
       </a>
-        <a href="#" class="sidebar-link">
+        <a href="#" class="sidebar-link" id="new-album-link">
             <span class="sidebar-link-icon">🎵</span>
-            Your Library
+            Create Album
         </a>
-    </div>
-
-    <!-- Bottom section of the sidebar -->
-    <div class="sidebar-section">
-      <a href="#" class="sidebar-link active">
-          <span class="sidebar-link-icon">💜</span>
-          <span class="sidebar-link-text">Liked Songs</span>
-      </a>
-      <!-- Repeat for each item -->
-      <a href="#" class="sidebar-link">
-          <span class="sidebar-link-icon">🎶</span>
-          <span class="sidebar-link-text">K-Pop</span>
-      </a>
-      <a href="#" class="sidebar-link">
-          <span class="sidebar-link-icon">👤</span>
-          <span class="sidebar-link-text">YOASOBI</span>
-      </a>
-        <!-- ... more links ... -->
     </div>
 </div>
 
@@ -81,16 +63,42 @@
     <!-- Artist Header -->
     <div class="relative">
       <!-- Increased height with inline style -->
-      <img src="{% static 'Images/IUprofile.jpg' %}" style="height: 600px; object-fit: cover; width: 100%;">
+      <img id="profile-banner" src="{% if request.user.artistaccount.banner_image %} {{ request.user.artistaccount.banner_image.url }} {% else %} {% static 'Images/IUprofile.jpg' %} {% endif %}" style="height: 600px; object-fit: cover; width: 100%;">
       <div class="absolute bottom-0 p-5 w-full" style="background: rgba(0, 0, 0, 0.5);">
-        <div class="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-            <!-- Your SVG path for the verified icon -->
-            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 18.1c-3.374 0-6.1-2.726-6.1-6.1 0-3.374 2.726-6.1 6.1-6.1 3.374 0 6.1 2.726 6.1 6.1 0 3.374-2.726 6.1-6.1 6.1zm3.95-8.95l-4.4 4.4-2.1-2.1-1.45 1.45 3.55 3.55 5.85-5.85-1.45-1.45z"/>
-          </svg>
-          <span class="text-sm text-gray-300 ml-1">Verified Artist</span>
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="flex items-center"> <!-- Added a flex container for the badge -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 18.1c-3.374 0-6.1-2.726-6.1-6.1 0-3.374 2.726-6.1 6.1-6.1 3.374 0 6.1 2.726 6.1 6.1 0 3.374-2.726 6.1-6.1 6.1zm3.95-8.95l-4.4 4.4-2.1-2.1-1.45 1.45 3.55 3.55 5.85-5.85-1.45-1.45z"/>
+              </svg>
+              <span class="text-sm text-gray-300 ml-1">Verified Artist</span>
+            </div>
+            <h1 class="text-5xl font-bold text-white mt-2">{{ user.username }}</h1>
+          </div>
+          <!-- Pen Icon Button -->
+          <button id="editBannerButton" class="text-gray-400 hover:text-white focus:outline-none ml-4 mt-4 flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+          </button>
+          <!-- End Pen Icon Button -->
         </div>
-        <h1 class="text-5xl font-bold text-white mt-2">IU</h1>
+      </div>
+    </div>
+    <!-- Albums Section -->
+    <div class="p-5">
+      <h2 class="text-2xl font-bold mb-4">Albums</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {% for album in albums %}
+        <div class="relative">
+          <img src="{% if album.cover_image %} {{ album.cover_image.url }} {% else %} {% static 'Images/IUlogo.jpg' %} {% endif %}" alt="{{ album.name }}" class="w-full h-48 object-cover rounded-md">
+          <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-70 text-white p-2">
+            <h3 class="text-sm font-semibold">{{ album.name }}</h3>
+          </div>
+        </div>
+        {% empty %}
+        <p>No albums created yet.</p>
+        {% endfor %}
       </div>
     </div>
 
@@ -98,17 +106,24 @@
     <div class="p-5">
       <h2 class="text-2xl font-bold mb-4">Songs</h2>
       <div class="divide-y divide-gray-800">
+        {% for track in tracks %}
         <!-- Single Track Row -->
         <div class="flex justify-between items-center py-3">
           <div class="flex items-center space-x-4">
-            <img src="{% static 'Images/IUlogo.jpg' %}" alt="Song Image" class="w-12 h-12">
+            {% if track.album and track.album.cover_image %}
+            <img src="{{ track.album.cover_image.url }}" alt="Album Cover" class="w-12 h-12 object-cover">
+            {% else %}
+            <img src="{% static 'Images/IUlogo.jpg' %}" alt="Default Song Image" class="w-12 h-12">
+            {% endif %}
             <div>
-              <p class="text-base font-medium">Love wins all</p>
-              <p class="text-xs text-gray-400">IU</p>
+              <p class="text-base font-medium">{{ track.music_name }}</p>
+              <p class="text-xs text-gray-400">{{ user.username }}</p>
             </div>
           </div>
-          <div class="text-gray-400">3:59</div>
         </div>
+        {% empty %}
+        <p>No songs uploaded yet.</p>
+        {% endfor %}
         <!-- Repeat for other tracks -->
       </div>
       <!-- <a href="#" class="text-green-500 text-sm">See more</a> -->
@@ -116,62 +131,115 @@
 
   </div>
 
-    <!-- Upload Song Pop-up -->
-    <div id="uploadPopupOverlay" class="upload-popup-overlay">
-      <div class="upload-popup">
-        <div class="upload-popup-header">
-          <h2>Upload Song</h2>
-          <button id="closePopup" class="close-button">×</button>
-        </div>
-        <form id="uploadForm" method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" id="title" name="music_name" required>
-            {% if form.music_name.errors %}
-              <ul class="errorlist">
-                {% for error in form.music_name.errors %}
-                  <li>{{ error }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-          <div class="form-group">
-            <label for="music_date">Music date</label>
-            <input type="date" id="music_date" name="music_date" required>
-          </div>
-          <div class="form-group">
-            <label for="album">Album</label>
-            <select id="album" name="album" required>
-              <option value="" disabled selected>Select an album</option>
-              {% for album in albums %}
-                  <option value="{{ album.id }}">{{ album.name }}</option>
-              {% endfor %}
-            </select>
-            {% if form.album.errors %}
-                <ul class="errorlist">
-                    {% for error in form.album.errors %}
-                    <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-          </div>
-          <div class="form-group">
-            <label for="audioFile">Audio File</label>
-            <input type="file" id="audioFile" name="audio_file" accept=".mp3" required>
-            {% if form.audio_file.errors %}
-              <ul class="errorlist">
-                {% for error in form.audio_file.errors %}
-                  <li>{{ error }}</li>
-                {% endfor %}
-              </ul>
-            {% endif %}
-          </div>
-          <button type="submit" class="submit-button">Upload</button>
-        </form>
+  <!-- Upload Song Pop-up -->
+  <div id="uploadPopupOverlay" class="upload-popup-overlay">
+    <div class="upload-popup">
+      <div class="upload-popup-header">
+        <h2>Upload Song</h2>
+        <button id="closePopup" class="close-button">×</button>
       </div>
+      <form id="uploadForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" id="title" name="music_name" required value="{{ form.music_name.value|default:'' }}">
+          {% if form.music_name.errors %}
+          <ul class="errorlist">
+            {% for error in form.music_name.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="music_date">Music date</label>
+          <input type="date" id="music_date" name="music_date" required value="{{ form.music_date.value|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label for="album">Album</label>
+          <select id="album" name="album">
+            <option value="" disabled {% if not form.album.value %}selected{% endif %}>Select an album</option>
+            {% for album in albums %}
+            <option value="{{ album.id }}" {% if form.album.value == album.id|stringformat:'s' %}selected{% endif %}>{{ album.name }}</option>
+            {% endfor %}
+          </select>
+          {% if form.album.errors %}
+          <ul class="errorlist">
+            {% for error in form.album.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label for="audioFile">Audio File</label>
+          <input type="file" id="audioFile" name="audio_file" accept=".mp3" required>
+          {% if form.audio_file.errors %}
+          <ul class="errorlist">
+            {% for error in form.audio_file.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+        <button type="submit" class="submit-button">Upload</button>
+      </form>
     </div>
+  </div>
 
+  <!-- Banner Upload Pop-up -->
+  <div id="bannerUploadOverlay" class="upload-popup-overlay" style="display: none;">
+    <!-- Initially hidden -->
+    <div class="upload-popup">
+      <div class="upload-popup-header">
+        <h2>Upload New Banner</h2>
+        <button id="closeBannerPopup" class="close-button">×</button>
+      </div>
+      <form id="bannerUploadForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="banner_image">Banner Image</label>  <!-- Corrected 'name' attribute -->
+            {{ banner_form.banner_image }}  <!-- Render the form field -->
+            {% if banner_form.banner_image.errors %}
+            <ul class="errorlist">
+                {% for error in banner_form.banner_image.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        <button type="submit" class="submit-button">Upload Banner</button>
+      </form>
+    </div>
+  </div>
+  <!-- New Album Pop-up -->
+<div id="newAlbumPopupOverlay" class="upload-popup-overlay">
+  <div class="upload-popup">
+      <div class="upload-popup-header">
+          <h2>Create New Album</h2>
+          <button id="closeNewAlbumPopup" class="close-button">×</button>
+      </div>
+      <form id="newAlbumForm" method="post" action="{% url 'artist_home' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+            <div class = "form-group">
+            <label for = "{{ album_form.name.id_for_label }}">Album Name</label>
+            {{ album_form.name }}
+            </div>
+            <div class="form-group">
+                <label for="{{ album_form.cover_image.id_for_label }}">Album Cover</label>
+                {{ album_form.cover_image }}  <!-- Display the cover_image form field -->
+                {% if album_form.cover_image.errors %}
+                    <ul class="errorlist">
+                        {% for error in album_form.cover_image.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <button type="submit" class="submit-button">Create Album</button>
+        </form>
+    </div>
+</div>
   <script>
     const uploadLink = document.getElementById('upload-link');
     const uploadPopupOverlay = document.getElementById('uploadPopupOverlay');
@@ -190,6 +258,45 @@
     window.addEventListener('click', (event) => {
       if (event.target === uploadPopupOverlay) {
         uploadPopupOverlay.style.display = 'none';
+      }
+    });
+
+    const editBannerButton = document.getElementById('editBannerButton');
+    const bannerUploadOverlay = document.getElementById('bannerUploadOverlay');
+    const closeBannerPopup = document.getElementById('closeBannerPopup');
+    const bannerUploadForm = document.getElementById('bannerUploadForm'); // Get the form
+
+    editBannerButton.addEventListener('click', () => {
+      bannerUploadOverlay.style.display = 'flex';
+    });
+
+    closeBannerPopup.addEventListener('click', () => {
+      bannerUploadOverlay.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+      if (event.target === bannerUploadOverlay) {
+        bannerUploadOverlay.style.display = 'none';
+      }
+    });
+
+    const newAlbumLink = document.getElementById('new-album-link');
+    const newAlbumPopupOverlay = document.getElementById('newAlbumPopupOverlay');
+    const closeNewAlbumPopup = document.getElementById('closeNewAlbumPopup');
+
+    newAlbumLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      newAlbumPopupOverlay.style.display = 'flex';
+    });
+
+    closeNewAlbumPopup.addEventListener('click', () => {
+      newAlbumPopupOverlay.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+      if (event.target === newAlbumPopupOverlay) {
+        newAlbumPopupOverlay.style.display = 'none';
+
       }
     });
   </script>

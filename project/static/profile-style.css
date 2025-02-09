@@ -1,238 +1,261 @@
-/* Artist Overlay */
-.artist-overlay {
-  background: rgba(0, 0, 0, 0.7);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  padding: 2rem;
-}
+/* ==========================================================================
+   General Styles
+   ========================================================================== */
 
-.artist-info {
-  color: white;
-}
-
-.verified-badge {
-  color: #1DB954;
-}
-
-/* Upload Popup Overlay */
-.upload-popup-overlay {
-  display: none; /* Hidden by default */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
-}
-
-/* Upload Popup Container */
-.upload-popup {
-  background: #1a1a1a;
-  border-radius: 10px;
-  padding: 2rem;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
-  animation: scaleIn 0.3s ease-in-out;
-  text-align: center;
-}
-
-/* Upload Popup Header */
-.upload-popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.upload-popup-header h2 {
-  color: white;
-  font-size: 1.5rem;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: white;
-  cursor: pointer;
-}
-
-/* Form Group */
-.form-group {
-  margin-bottom: 1rem;
-  text-align: left;
-}
-
-.form-group label {
-  display: block;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  color: #cccccc;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 0.25rem;
-  background: #333333;
-  color: white;
-}
-
-/* Submit Button */
-.submit-button {
-  width: 100%;
-  background: #1d5bb9;
-  color: white;
-  font-size: 1rem;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.submit-button:hover {
-  background: #174994;
-}
-
-/* Sidebar Styles */
-.sidebar {
-  background-color: #000;
-  width: 240px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  color: #b3b3b3;
-  font-size: 14px;
-}
-
-.sidebar a {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  padding: 5px 15px;
-  margin: 10px 0;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
-
-.sidebar a:hover,
-.sidebar a.active {
-  background-color: #282828;
-}
-
-.sidebar-section {
-  background: #181818;
-  border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 9px;
-}
-
-/* Sidebar Link Styles */
-.sidebar-link {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  transition: color 0.3s;
-}
-
-.sidebar-link:hover,
-.sidebar-link.active {
-  color: #fff;
-}
-
-.sidebar-link-icon {
-  margin-right: 15px;
-  display: inline-block;
-  width: 24px;
-  text-align: center;
-}
-
-.sidebar-link-text {
-  flex-grow: 1;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+   body {
+    background-color: #000 !important;
+    color: #fff !important;
+    font-family: sans-serif; /* Or your preferred font */
   }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.9);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-/* Responsive Design */
-@media (min-width: 768px) {
+  
+  /* ==========================================================================
+     Sidebar Styles
+     ========================================================================== */
+  
   .sidebar {
-    flex-basis: 250px;
-    flex-shrink: 0;
+    background-color: #000 !important;
+    width: 240px !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    color: #b3b3b3 !important;
+    font-size: 14px !important;
   }
-
-  .main-content {
-    flex-grow: 1;
+  
+  .sidebar a {
+    text-decoration: none !important;
+    color: inherit !important;
+    display: block !important;
+    padding: 5px 15px !important;
+    margin: 10px 0 !important;
+    border-radius: 4px !important;
+    transition: background-color 0.3s ease !important;
   }
-}
-#album {
-  width: 100%;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 0.25rem;
-  background: #333333;
-  color: white;
-  appearance: none; 
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 1rem;
-}
-
-#album:focus {
-  outline: none;
-  border: 1px solid #1d5bb9;
-}
-
-#album option {
-  background: #1a1a1a;
-  color: white;
-}
-
-#genre {
-  width: 100%;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 0.25rem;
-  background: #333333;
-  color: white;
-  appearance: none; 
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 1rem;
-}
-
-#genre:focus {
-  outline: none;
-  border: 1px solid #1d5bb9;
-}
-
-#genre option {
-  background: #1a1a1a;
-  color: white;
-}
+  
+  .sidebar a:hover,
+  .sidebar a.active {
+    background-color: #282828 !important;
+    color: #fff !important;
+  }
+  
+  .sidebar-section {
+    background: #181818 !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    margin-bottom: 9px !important;
+  }
+  
+  .sidebar-link {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 10px !important;
+    transition: color 0.3s !important;
+  }
+  
+  .sidebar-link:hover,
+  .sidebar-link.active {
+    color: #fff !important;
+  }
+  
+  .sidebar-link-icon {
+    margin-right: 15px !important;
+    display: inline-block !important;
+    width: 24px !important;
+    text-align: center !important;
+  }
+  
+  .sidebar-link-text {
+    flex-grow: 1 !important;
+  }
+  
+  /* ==========================================================================
+     Artist Header Styles
+     ========================================================================== */
+  
+  .artist-overlay {
+    background: rgba(0, 0, 0, 0.7) !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: end !important;
+    padding: 2rem !important;
+  }
+  
+  .artist-info {
+    color: white !important;
+  }
+  
+  .verified-badge {
+    color: #1DB954 !important;
+  }
+  
+  /* ==========================================================================
+     Upload Popup Styles
+     ========================================================================== */
+  
+  /* Overlay */
+  .upload-popup-overlay {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 50 !important;
+  }
+  
+  /* Container */
+  .upload-popup {
+    display: inline;
+    background: #1a1a1a !important;
+    border-radius: 10px !important;
+    padding: 2rem !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25) !important;
+    animation: scaleIn 0.3s ease-in-out !important;
+    text-align: center !important;
+  }
+  
+  /* Header */
+  .upload-popup-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 1.5rem !important;
+  }
+  
+  .upload-popup-header h2 {
+    color: white !important;
+    font-size: 1.5rem !important;
+  }
+  
+  .close-button {
+    background: none !important;
+    border: none !important;
+    font-size: 1.5rem !important;
+    color: white !important;
+    cursor: pointer !important;
+  }
+  
+  /* ==========================================================================
+     Form Styles (Consistent Across Popups)
+     ========================================================================== */
+  
+  /* Form Group */
+  .upload-popup .form-group {
+    margin-bottom: 1rem !important;
+    text-align: left !important;
+  }
+  
+  .upload-popup .form-group label {
+    display: block !important;
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
+    color: #cccccc !important;
+  }
+  
+  /* Consistent Input Styling */
+  .upload-popup .form-group input[type="text"],
+  .upload-popup .form-group input[type="date"],
+  .upload-popup .form-group input[type="file"],
+  .upload-popup .form-group select {
+    width: 100% !important;
+    padding: 0.75rem !important;
+    border: none !important;
+    border-radius: 0.25rem !important;
+    background: #333333 !important;
+    color: white !important;
+    /* Ensure consistent font */
+    font-family: sans-serif; /* Or your preferred font */
+    font-size: 1rem !important;
+    box-sizing: border-box !important; /* Ensure padding doesn't break layout */
+    outline: none !important; /* Remove default focus outline */
+    transition: border-color 0.2s ease-in-out !important;
+  }
+  
+  .upload-popup .form-group input[type="file"] {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  /* Special styling for select dropdowns */
+  .upload-popup .form-group select {
+    appearance: none !important;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 1rem !important;
+  }
+  
+  /* Focus state for inputs */
+  .upload-popup .form-group input[type="text"]:focus,
+  .upload-popup .form-group input[type="date"]:focus,
+  .upload-popup .form-group input[type="file"]:focus,
+  .upload-popup .form-group select:focus {
+    border-color: #1d5bb9 !important;
+  }
+  
+  /* Options within select dropdowns */
+  .upload-popup .form-group select option {
+    background: #1a1a1a !important;
+    color: white !important;
+  }
+  
+  /* Submit Button */
+  .submit-button {
+    width: 100% !important;
+    background: #1d5bb9 !important;
+    color: white !important;
+    font-size: 1rem !important;
+    padding: 0.75rem !important;
+    border: none !important;
+    border-radius: 0.25rem !important;
+    cursor: pointer !important;
+    transition: background 0.3s ease !important;
+  }
+  
+  .submit-button:hover {
+    background: #174994 !important;
+  }
+  
+  /* ==========================================================================
+     Animations
+     ========================================================================== */
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.9);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  
+  /* ==========================================================================
+     Responsive Design (Example)
+     ========================================================================== */
+  
+  /* Adjustments for larger screens */
+  @media (min-width: 768px) {
+    .sidebar {
+      flex-basis: 250px !important;
+      flex-shrink: 0 !important;
+    }
+  
+    .main-content {
+      flex-grow: 1 !important;
+    }
+  }

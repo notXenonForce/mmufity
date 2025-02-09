@@ -15,7 +15,9 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+LOGOUT_REDIRECT_URL = '/login'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -78,7 +80,7 @@ WSGI_APPLICATION = 'musicproject.wsgi.application'
 DATABASES = {
     'default': {
        'ENGINE': 'django.db.backends.postgresql',
-       'NAME': 'defaultdb',
+       'NAME': 'defaultdb2',
        'USER': 'avnadmin',
        'PASSWORD': 'AVNS_NEWUHRbM3Cc5QKeCGZ9',
        'HOST': 'mmufity-mmufity.k.aivencloud.com',
