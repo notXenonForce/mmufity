@@ -3,11 +3,12 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import User, auth
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import UploadSongForm, AlbumForm, BannerUploadForm  # Import AlbumForm
-from .models import Music, Album, ArtistAccount
+from .forms import UploadSongForm, AlbumForm, BannerUploadForm, PlaylistForm, EditSongForm # Import forms
+from .models import Music, Album, ArtistAccount, Playlist # Import models
 from .validators import validate_audio_file
 from django.core.exceptions import ValidationError
 from django.db.models import Max, Min
+from django.db.models import Q
 
 # Helper functions for user type checks
 def is_artist(user):
@@ -16,57 +17,70 @@ def is_artist(user):
 def is_admin(user):
     return user.is_staff and user.is_superuser  # Admins are is_staff and is_superuser
 
-@login_required
 def music_tracks(request):
     track_id = request.GET.get('track_id')
     album_id = request.GET.get('album_id')
     selected_track = None
     tracks = []
     album = None
+    max_track_id = None
+    first_track_id = None
+    valid_track_ids = []
 
     try:
-        # Get the ArtistAccount for the logged-in user
-        artist_account = ArtistAccount.objects.get(user=request.user)
+        #Attempt to get the user, if not then we will just provide null variable
+        try:
+          artist_account = ArtistAccount.objects.get(user=request.user)
+        except:
+          artist_account = None
 
         # Filter Music objects by the artist
-        all_tracks_for_artist = Music.objects.filter(artist=artist_account)
+        if artist_account == None:
+            all_tracks = Music.objects.all().order_by('id')
+        else:
+            all_tracks = Music.objects.filter(artist=artist_account).order_by('id') #Removed Artist from Filter
+        valid_track_ids = list(all_tracks.values_list('id', flat=True)) #Removed Artist from Filter
+
+        # Get the maximum and minimum track IDs upfront.  Use None defaults to avoid errors
+        if valid_track_ids:  # Only aggregate if there are tracks
+            max_aggregate = all_tracks.aggregate(Max('id'), Min('id'))
+            max_track_id = max_aggregate['id__max']
+            first_track_id = max_aggregate['id__min']
 
         if track_id:
-            selected_track = get_object_or_404(Music, pk=track_id, artist=artist_account) # ensure only artist's tracks are selected
-            album = selected_track.album
+            try:
+                selected_track = all_tracks.get(pk=track_id)
+                album = selected_track.album
+                tracks = all_tracks.filter(album=album)
+
+            except Music.DoesNotExist:
+                messages.error(request, "Track does not exist. Attempting to play another track.")
+                selected_track = None
+                tracks = []
+
         elif album_id:
             album = get_object_or_404(Album, pk=album_id)
-            tracks = all_tracks_for_artist.filter(album=album)
+            tracks = all_tracks.filter(album=album)
             selected_track = tracks.first() if tracks else None
+
         else:
-            tracks = all_tracks_for_artist  # Only get tracks for this artist
-
-        # Get the maximum track ID for the artist's music
-        max_track_id = all_tracks_for_artist.aggregate(Max('id'))['id__max'] or 1
-
-        # Get the *minimum* track ID (ID of the first track)
-        first_track_id = all_tracks_for_artist.aggregate(Min('id'))['id__min'] or 1
-
-        if max_track_id is None:
-            max_track_id = 1
-        if first_track_id is None:
-            first_track_id = 1
-
-    except ArtistAccount.DoesNotExist:
-        messages.error(request, "Artist account not found.  Please create one.")
-        max_track_id = 1
-        first_track_id = 1
-    except Music.DoesNotExist:
-         messages.error(request, "Music does not exist. Please upload one.")
-         max_track_id = 1
-         first_track_id = 1
+            selected_track = all_tracks.first()
+            tracks = all_tracks
 
     except Exception as e:
         messages.error(request, f"Error retrieving music: {e}")
-        max_track_id = 1
-        first_track_id = 1
+        selected_track = None
+        tracks = []
 
-    context = {'selected_track': selected_track, 'album': album, 'tracks': tracks, 'max_track_id': max_track_id, 'first_track_id': first_track_id}
+    context = {
+        'selected_track': selected_track,
+        'album': album,
+        'tracks': tracks,
+        'max_track_id': max_track_id,
+        'first_track_id': first_track_id,
+        'valid_track_ids': valid_track_ids,
+    }
+
     return render(request, 'music_tracks.html', context)
 
 def music_album(request):
@@ -95,6 +109,65 @@ def user_home(request):
 
 def search(request):
     return render(request, 'search.html')
+
+from .forms import UserBannerUploadForm, PlaylistForm # Make sure you have the correct import statement
+@login_required(login_url='login')
+def user_home(request):
+    if request.method == 'POST':
+        playlist_form = PlaylistForm(request.POST, request.FILES)
+        banner_form = UserBannerUploadForm(request.POST, request.FILES, instance=request.user.useraccount)
+        if playlist_form.is_valid():
+            playlist = playlist_form.save(commit=False)
+            if request.user.is_authenticated:
+                playlist.user = request.user.useraccount  # Assuming useraccount is the related name
+                playlist.save()
+            return redirect('user_home')  # Redirect to the same page
+        elif banner_form.is_valid():
+            banner_form.save()
+            return redirect('user_home')
+        else:
+            print(playlist_form.errors)  # Print form errors
+            print(banner_form.errors)
+
+    else:  # GET request (initial page load)
+        playlist_form = PlaylistForm()
+        banner_form = UserBannerUploadForm(instance = request.user.useraccount)
+
+    # Get playlists for the user
+    if request.user.is_authenticated:
+        playlists = Playlist.objects.filter(user=request.user.useraccount)
+    else:
+        playlists = []
+
+    context = {
+        'playlist_form': playlist_form,
+        'playlists': playlists,
+        'banner_form': banner_form, # Pass the banner form to the context
+        'user': request.user,
+    }
+    return render(request, 'profile_user.html', context)  # Pass the context to the template
+
+def search(request):
+    search_term = request.GET.get('q', '').lower()  # Default to empty string if q is missing
+
+    results = []
+
+    if search_term:
+        artist_accounts = ArtistAccount.objects.filter(user__username__icontains=search_term)
+        results.extend([{'obj': obj, 'type': 'artist'} for obj in artist_accounts])
+
+        albums = Album.objects.filter(Q(name__icontains=search_term) | Q(artists__user__username__icontains=search_term))
+        results.extend([{'obj': obj, 'type': 'album'} for obj in albums])
+
+        musics = Music.objects.filter(Q(music_name__icontains=search_term) | Q(artist__user__username__icontains=search_term))
+        results.extend([{'obj': obj, 'type': 'music'} for obj in musics])
+
+    context = {
+        'search_term': search_term,
+        'search_results': results,
+    }
+
+    return render(request, 'search.html', context)
 
 @login_required(login_url='login')
 def index(request):
@@ -306,3 +379,89 @@ def artist_home(request):
     }
 
     return render(request, 'profile.html', context)
+
+def artist_detail(request, pk):
+    artist = get_object_or_404(ArtistAccount, pk=pk)
+    context = {'artist': artist}
+    return render(request, 'artist_detail.html', context)
+def album_detail(request, pk):
+    album = get_object_or_404(Album, pk=pk)
+    context = {'album': album}
+    return render(request, 'album_detail.html', context)
+def playlist_detail(request, pk):
+    playlist = get_object_or_404(Playlist, pk=pk)
+    context = {'playlist': playlist}
+    return render(request, 'playlist_detail.html', context)
+
+from django.http import JsonResponse
+
+from django.http import JsonResponse
+from django.shortcuts import redirect
+from .models import Music, ArtistAccount # Make sure you are importing these correctly!
+from .forms import UploadSongForm # Same here, check it
+from django.contrib import messages
+from django.core.exceptions import ValidationError
+from .validators import validate_audio_file # you should import your validator as well
+from django.contrib.auth.decorators import login_required # and of course make sure people login to upload music
+
+
+@login_required
+def search_music_for_playlist(request):
+    if request.method == 'GET':
+        term = request.GET.get('term')  # Get the search term from the request
+        if term:
+            results = Music.objects.filter(music_name__icontains=term)[:10]  # Limit to 10 results
+            data = [{'id': m.id, 'name': m.music_name, 'artist': m.artist.user.username} for m in results]
+        else:
+            data = []
+        return JsonResponse(data, safe=False)
+
+    elif request.method == 'POST':
+        upload_form = UploadSongForm(request.POST, request.FILES)
+        if upload_form.is_valid():
+            try:
+                # Validate the file using your custom validator
+                validate_audio_file(request.FILES['audio_file'])
+
+                # If validation passes, save the form
+                new_song = upload_form.save(commit=False)  # Don't save to the database yet
+
+                #Getting the ArtistAccount associated with the logged in user:
+                artist_account = ArtistAccount.objects.get(user=request.user) #Get the user, not username
+                new_song.artist = artist_account   # Access ArtistAccount through user
+
+                # **Here's the corrected album assignment:**
+                new_song.album = upload_form.cleaned_data['album']
+
+                new_song.save()  # Save the song to the database
+                messages.success(request, 'Song uploaded successfully!')
+                return JsonResponse({'success': True, 'message': 'Song uploaded successfully!'}) # Return a JSON on success
+
+            except ValidationError as e:
+                # If validation fails, add an error to the form
+                messages.error(request, e)  # Display validator error message.
+                return JsonResponse({'success': False, 'message': str(e)})  # return a JSON message
+            except Exception as e: # Catch other potential exceptions
+                messages.error(request, f"An unexpected error occurred: {e}")
+                return JsonResponse({'success': False, 'message': f"An unexpected error occurred: {e}"})
+
+        else:
+            messages.error(request, upload_form.errors)
+            return JsonResponse({'success': False, 'message': str(upload_form.errors)})
+        
+@login_required
+@user_passes_test(is_artist)
+def edit_song(request, track_id):
+    track = get_object_or_404(Music, pk=track_id)
+    form = EditSongForm(instance=track)
+
+    if request.method == 'POST':
+        form = EditSongForm(request.POST, instance=track)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Song updated successfully!')
+            return redirect('artist_home')  # Or wherever you want to redirect after editing
+        else:
+            messages.error(request, 'There was an error updating the song.')
+
+    return render(request, 'edit_song.html', {'form': form, 'track': track})

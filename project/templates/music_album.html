@@ -13,42 +13,35 @@
     <div class="sidebar">
         <!-- Spotify Logo -->
         <div class="logo-container">
-            <img src="{% static 'Images\logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            <a href="{% url 'artist_home' %}">
+                <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            </a>
         </div>
 
-        <!-- Top section of the sidebar -->
         <div class="sidebar-section">
-            <a href="#" class="sidebar-link active">
+            <span class="sidebar-link-icon" style="display: inline-block; margin-left: 14px;">👤</span>
+            {% if user.is_authenticated %}
+            <b>Welcome, <span style="display: inline-block; margin-left: 57px;">{{ user.username }}</span></b>
+            {% else %}
+            <b>Welcome, Guest</b>
+            {% endif %}
+            <br>
+            <a href="{% url 'artist_home' %}" class="sidebar-link">
                 <span class="sidebar-link-icon">🏠</span>
                 Home
             </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-link-icon">🔍</span>
-                Search
+            {% if user.is_authenticated %}
+            <a href="/logout">
+              <span class="sidebar-link-icon">↪️</span>
+              <b>Logout</b>
             </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-link-icon">🎵</span>
-                Your Library
+            {% else %}
+            <a href="/login">
+              <span class="sidebar-link-icon">↩</span>
+              <b>Login</b>
             </a>
-        </div>
-
-        <!-- Bottom section of the sidebar -->
-        <div class="sidebar-section">
-            <a href="#" class="sidebar-link active">
-                <span class="sidebar-link-icon">💜</span>
-                <span class="sidebar-link-text">Liked Songs</span>
-            </a>
-            <!-- Repeat for each item -->
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-link-icon">🎶</span>
-                <span class="sidebar-link-text">K-Pop</span>
-            </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-link-icon">👤</span>
-                <span class="sidebar-link-text">YOASOBI</span>
-            </a>
-            <!-- ... more links ... -->
-        </div>
+            {% endif %}
+          </div>
     </div>
     <!-- Main content area where we will add the music player -->
     <div class="music-player" style="margin-left:240px; padding:20px; display: flex; justify-content: center; align-items: center; height: calc(100vh - 90px);">
@@ -69,11 +62,11 @@
                 <button id="next" class="control-btn">►</button>
             </div>
             <div class="progress-bar" id="progress-bar">
-                <div class="progress" id="progress" style="color: rgb(29 91 185)"></div>
+                <div class="progress" id="progress"></div>
             </div>
             <div class="time-stamps">
                 <span id="current-time">0:00</span>
-                <span id="total-duration">4:00</span>
+                <span id="total-duration">0:00</span>
             </div>
             <div class = "song_list">
                 {% if tracks %}
@@ -94,55 +87,81 @@
         const playPauseBtn = document.getElementById('play-pause');
         const trackList = document.querySelectorAll('.track');
         let currentTrackIndex = 0;
-
+        const progressContainer = document.getElementById('progress-bar'); //Make sure its the correct ID
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('total-duration');
+    
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60);
+            let seconds = Math.floor(time % 60);
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            return `${minutes}:${seconds}`;
+        }
+    
+        function updateProgress() {
+            const { duration, currentTime } = audioPlayer;
+            if (isNaN(duration)) return; // Skip if duration is still invalid
+    
+            const progressPercent = (currentTime / duration) * 100;
+            progress.style.width = `${progressPercent}%`;
+            currentTimeEl.textContent = formatTime(currentTime);
+        }
+    
+        function setProgress(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audioPlayer.duration;  // Get the duration *directly*
+    
+            if (isNaN(duration)) return;  //Ensure its a valid number for the operation
+    
+            const newTime = (clickX / width) * duration; //This is where the updated duration value has to be provided from the get go
+            audioPlayer.currentTime = newTime;
+        }
+    
+        function setDuration() { //No need to add e param, just to get duration
+            const duration = audioPlayer.duration; //Update the correct value from function call
+            if (isNaN(duration)) return; //Validate that the duration is a number before rendering
+    
+            durationEl.textContent = formatTime(duration);
+        }
+    
         function loadTrack(index) {
-            // Remove 'selected' class from previously selected track
-            const previouslySelected = document.querySelector('.track.selected');
-            if (previouslySelected) {
-                previouslySelected.classList.remove('selected');
-            }
-
             const trackElement = trackList[index];
             const trackSrc = trackElement.getAttribute('data-src');
-
+    
+            // Remove 'selected' class from previously selected track
+            trackList.forEach(track => track.classList.remove('selected'));
+    
             audioPlayer.src = trackSrc;
             audioPlayer.load();
-            audioPlayer.play(); // ADDED autoplay
-            playPauseBtn.textContent = '⏸';
-            // Add 'selected' class to the newly selected track
+    
+            //Add event listenrs and trigger if is loaded, this is a more safe way
+            audioPlayer.addEventListener('loadedmetadata', setDuration);
+            audioPlayer.addEventListener('timeupdate', updateProgress);
+    
+            playPauseBtn.textContent = '▶';
             trackElement.classList.add('selected');
-
-            // Update displayed song information
             updateDisplay(trackElement);
         }
-
+    
         function updateDisplay(trackElement) {
-            const trackSrc = trackElement.getAttribute('data-src');
             const trackName = trackElement.textContent;
-
             document.querySelector('.song-title').textContent = trackName;
-
-            audioPlayer.src = trackSrc;
-            audioPlayer.load();
         }
-
+    
         // Load selected song or first song on page load
         {% if selected_track %}
-        const selectedTrackElement = document.querySelector('.track.selected');
-        if (selectedTrackElement) {
-            let foundIndex = Array.from(trackList).findIndex(el => el === selectedTrackElement);
-            if(foundIndex !== -1) {
-                currentTrackIndex = foundIndex;
+            const selectedTrackElement = document.querySelector('.track.selected');
+            if (selectedTrackElement) {
+                let foundIndex = Array.from(trackList).findIndex(el => el === selectedTrackElement);
+                if (foundIndex !== -1) {
+                    currentTrackIndex = foundIndex;
+                }
+                loadTrack(currentTrackIndex);
             }
-            const selectedTrackSrc = selectedTrackElement.getAttribute('data-src');
-            audioPlayer.src = selectedTrackSrc;
-            audioPlayer.load();
-             if(!audioPlayer.paused){
-                playPauseBtn.textContent = '⏸';
-             }
-        }
         {% endif %}
-
+    
         playPauseBtn.addEventListener('click', () => {
             if (audioPlayer.paused) {
                 audioPlayer.play();
@@ -152,8 +171,7 @@
                 playPauseBtn.textContent = '▶';
             }
         });
-
-        // Event Listeners for track list
+    
         trackList.forEach((track, index) => {
             track.addEventListener('click', () => {
                 currentTrackIndex = index;
@@ -162,11 +180,10 @@
                 playPauseBtn.textContent = '⏸';
             });
         });
-
-        // Track NAVIGATION
+    
         function trackNext() {
-            if (!trackList || trackList.length === 0) return; // Safety check
-
+            if (!trackList || trackList.length === 0) return;
+    
             currentTrackIndex++;
             if (currentTrackIndex >= trackList.length) {
                 currentTrackIndex = 0;
@@ -175,10 +192,10 @@
             audioPlayer.play();
             playPauseBtn.textContent = '⏸';
         }
-
+    
         function trackPrevious() {
-            if (!trackList || trackList.length === 0) return; // Safety check
-
+            if (!trackList || trackList.length === 0) return;
+    
             currentTrackIndex--;
             if (currentTrackIndex < 0) {
                 currentTrackIndex = trackList.length - 1;
@@ -187,20 +204,15 @@
             audioPlayer.play();
             playPauseBtn.textContent = '⏸';
         }
-
-        document.getElementById('next').addEventListener('click', () => {
-            trackNext();
-        });
-
-        document.getElementById('prev').addEventListener('click', () => {
-            trackPrevious();
-        });
-
-        audioPlayer.addEventListener('ended', () => {
-            trackNext();
-        });
-
-
+    
+        document.getElementById('next').addEventListener('click', trackNext);
+        document.getElementById('prev').addEventListener('click', trackPrevious);
+        audioPlayer.addEventListener('ended', trackNext);
+    
+        progressContainer.addEventListener('click', setProgress);
+    
+        // Initial setting of duration, load one time
+        audioPlayer.addEventListener('loadedmetadata', setDuration);
     </script>
 </body>
 </html>

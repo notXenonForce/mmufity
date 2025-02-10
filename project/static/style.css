@@ -1,208 +1,206 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
 
-    
-    /* General Reset */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Arial', sans-serif;
-    }
+body {
+    color: #fff;
+    background-color: #121212;
+    display: flex;
+    height: 100vh;
+}
 
-    body {
-        color: #fff;
-        background-color: #121212;
-        display: flex;
-        height: 100vh;
-    }
+/* Sidebar Styles */
+.sidebar {
+    background-color: #000;
+    width: 240px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+}
 
-    /* Sidebar Styles */
-    .sidebar {
-        background-color: #000;
-        width: 240px;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        z-index: 2;
-    }
+/* Content Styles */
+.content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
 
-    /* Content Styles */
-    .content {
-        flex-grow: 1;
-        overflow-y: auto;
-    }
+/* Player Styles */
+.player {
+    background-color: #181818;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
 
-    /* Player Styles */
-    .player {
-        background-color: #181818;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        height: 90px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-    }
+/* Header Styles */
+header {
+    background-color: #181818;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+}
 
-    /* Header Styles */
-    header {
-        background-color: #181818;
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-    }
+/* Section Styles */
+section {
+    margin: 20px;
+}
 
-    /* Section Styles */
-    section {
-        margin: 20px;
-    }
+/* Card Styles */
+.card {
+    display: inline-block;
+    background-color: #282828;
+    margin-right: 20px;
+    border-radius: 4px;
+    width: 200px;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
 
-    /* Card Styles */
-    .card {
-        display: inline-block;
-        background-color: #282828;
-        margin-right: 20px;
-        border-radius: 4px;
-        width: 200px;
-        height: 200px;
-        background-size: cover;
-        background-position: center;
-        position: relative;
-    }
+.card .title {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: white;
+    font-size: 16px;
+}
 
-    .card .title {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        color: white;
-        font-size: 16px;
-    }
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 12px;
+}
 
-    /* Scrollbar Styles */
-    ::-webkit-scrollbar {
-        width: 12px;
-    }
+::-webkit-scrollbar-track {
+    background: #0e0e0e;
+}
 
-    ::-webkit-scrollbar-track {
-        background: #0e0e0e;
-    }
+::-webkit-scrollbar-thumb {
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: 3px solid #0e0e0e;
+}
 
-    ::-webkit-scrollbar-thumb {
-        background-color: #ffffff;
-        border-radius: 20px;
-        border: 3px solid #0e0e0e;
-    }
+/* Navigation Sidebar Styles */
+.sidebar {
+    color: #b3b3b3;
+    padding: 25px 10px;
+    font-size: 14px;
+}
 
-    /* Navigation Sidebar Styles */
-    .sidebar {
-        color: #b3b3b3;
-        padding: 25px 10px;
-        font-size: 14px;
-    }
+.sidebar a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    padding: 5px 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
 
-    .sidebar a {
-        text-decoration: none;
-        color: inherit;
-        display: block;
-        padding: 5px 15px;
-        margin: 10px 0;
-        border-radius: 4px;
-        transition: background-color 0.3s ease;
-    }
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: #282828;
+}
 
-    .sidebar a:hover,
-    .sidebar a.active {
-        background-color: #282828;
-    }
+/* Search Bar Styles */
+.search-bar {
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 10px 15px;
+    margin: 20px 0;
+}
 
-    /* Search Bar Styles */
-    .search-bar {
-        background-color: #fff;
-        border-radius: 4px;
-        padding: 10px 15px;
-        margin: 20px 0;
-    }
+/* Main Content Tiles */
+.tile {
+    display: inline-flex;
+    flex-direction: column;
+    width: 150px;
+    margin: 0 10px 20px;
+    text-align: center;
+    color: #fff;
+}
 
-    /* Main Content Tiles */
-    .tile {
-        display: inline-flex;
-        flex-direction: column;
-        width: 150px;
-        margin: 0 10px 20px;
-        text-align: center;
-        color: #fff;
-    }
+.tile img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
 
-    .tile img {
-        width: 100%;
-        border-radius: 8px;
-        margin-bottom: 8px;
-    }
+.tile .title {
+    font-size: 16px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-    .tile .title {
-        font-size: 16px;
-        font-weight: 600;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+.tile .subtitle {
+    font-size: 12px;
+    color: #b3b3b3;
+}
 
-    .tile .subtitle {
-        font-size: 12px;
-        color: #b3b3b3;
-    }
+/* Main Content Section Heading */
+.content h2 {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
 
-    /* Main Content Section Heading */
-    .content h2 {
-        color: #fff;
-        font-size: 24px;
-        margin-bottom: 20px;
-    }
+/* Scrollable Container for Tiles */
+.scrollable-row {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 20px;
+}
 
-    /* Scrollable Container for Tiles */
-    .scrollable-row {
-        display: flex;
-        overflow-x: auto;
-        padding-bottom: 20px;
-    }
+.scrollable-row::-webkit-scrollbar {
+    height: 8px;
+}
 
-    .scrollable-row::-webkit-scrollbar {
-        height: 8px;
-    }
+.scrollable-row::-webkit-scrollbar-thumb {
+    background-color: #b3b3b3;
+    border-radius: 10px;
+}
 
-    .scrollable-row::-webkit-scrollbar-thumb {
-        background-color: #b3b3b3;
-        border-radius: 10px;
-    }
+/* Player Bar Styles */
+.player {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    color: #b3b3b3;
+}
 
-    /* Player Bar Styles */
-    .player {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        color: #b3b3b3;
-    }
+.player .song-info {
+    display: flex;
+    align-items: center;
+}
 
-    .player .song-info {
-        display: flex;
-        align-items: center;
-    }
+.player img {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+}
 
-    .player img {
-        width: 50px;
-        height: 50px;
-        margin-right: 15px;
-    }
+.player .song-title {
+    font-size: 16px;
+    font-weight: bold;
+}
 
-    .player .song-title {
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .player .artist-name {
-        font-size: 14px;
-    }
+.player .artist-name {
+    font-size: 14px;
+}
 
 .artist-card {
     width: 200px;
@@ -216,6 +214,18 @@
     overflow: hidden;
     margin: 0 5px 20px;
     display: inline-block;
+    transition: transform 0.1s ease-in-out; 
+}
+
+.artist-card:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+      /* Slightly highlight on hover */
+}
+
+.artist-card a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 .artist-card img {
@@ -236,6 +246,13 @@
 .artist-card .artist-title {
     font-size: 13px;
     color: #b3b3b3;
+}
+
+.card-link {
+    text-decoration: none;
+    /* Remove underline from links */
+    color: inherit;
+    /* Inherit text color */
 }
 
 .close-btn {
@@ -273,7 +290,8 @@
     padding-left: 20px;
     padding-right: 20px;
     color: #fff;
-    font-size: 18px; /* Increase font size for bigger appearance */
+    font-size: 18px;
+    /* Increase font size for bigger appearance */
 }
 
 .search-bar button {
@@ -323,7 +341,8 @@
 .sidebar-link-icon {
     margin-right: 15px;
     display: inline-block;
-    width: 24px; /* Adjust size as needed */
+    width: 24px;
+    /* Adjust size as needed */
     text-align: center;
 }
 
@@ -349,7 +368,8 @@
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 115px;
     padding: 10px;
-    background-color: #121212; /* or any other color you prefer */
+    background-color: #121212;
+    /* or any other color you prefer */
 }
 
 .category-card {
@@ -362,9 +382,14 @@
     background: #181818;
     color: white;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     height: 240px;
     width: 220px;
+}
+
+.category-card:hover {
+    transform: scale(1.02); /* Slight scale up on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7); /* Enhance the shadow */
 }
 
 .category-card img {
@@ -386,8 +411,10 @@
     font-size: 24px;
     font-weight: bold;
     color: #fff;
-    margin-left: 20px; /* Align with the padding of the grid */
-    padding-top: 20px; /* Space above the title */
+    margin-left: 20px;
+    /* Align with the padding of the grid */
+    padding-top: 20px;
+    /* Space above the title */
 }
 
 
@@ -407,7 +434,7 @@
 .album-cover {
     max-width: 75%;
     border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
     margin-bottom: 20px;
 }
 
@@ -446,7 +473,7 @@
 
 .progress-bar {
     width: 100%;
-    background: #404040;
+    background-color: black;
     border-radius: 2px;
     height: 5px;
     position: relative;
@@ -454,7 +481,7 @@
 }
 
 .progress {
-    background: #1d5bb9;
+    background: rgb(29, 91, 185);
     width: 1%;
     height: 100%;
     border-radius: 2px;

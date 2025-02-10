@@ -6,23 +6,23 @@
     background-color: #000 !important;
     color: #fff !important;
     font-family: sans-serif; /* Or your preferred font */
-  }
-  
-  /* ==========================================================================
-     Sidebar Styles
-     ========================================================================== */
-  
-  .sidebar {
+}
+
+/* ==========================================================================
+   Sidebar Styles
+   ========================================================================== */
+
+   .sidebar {
     background-color: #000 !important;
-    width: 240px !important;
+    width: 240px !important;   /* **This is the key: fixed width** */
     padding: 20px !important;
     display: flex !important;
     flex-direction: column !important;
     color: #b3b3b3 !important;
     font-size: 14px !important;
-  }
-  
-  .sidebar a {
+}
+
+.sidebar a {
     text-decoration: none !important;
     color: inherit !important;
     display: block !important;
@@ -30,71 +30,71 @@
     margin: 10px 0 !important;
     border-radius: 4px !important;
     transition: background-color 0.3s ease !important;
-  }
-  
-  .sidebar a:hover,
-  .sidebar a.active {
+}
+
+.sidebar a:hover,
+.sidebar a.active {
     background-color: #282828 !important;
     color: #fff !important;
-  }
-  
-  .sidebar-section {
+}
+
+.sidebar-section {
     background: #181818 !important;
     border-radius: 10px !important;
     padding: 15px !important;
     margin-bottom: 9px !important;
-  }
-  
-  .sidebar-link {
+}
+
+.sidebar-link {
     display: flex !important;
     align-items: center !important;
     margin-bottom: 10px !important;
     transition: color 0.3s !important;
-  }
-  
-  .sidebar-link:hover,
-  .sidebar-link.active {
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
     color: #fff !important;
-  }
-  
-  .sidebar-link-icon {
+}
+
+.sidebar-link-icon {
     margin-right: 15px !important;
     display: inline-block !important;
     width: 24px !important;
     text-align: center !important;
-  }
-  
-  .sidebar-link-text {
+}
+
+.sidebar-link-text {
     flex-grow: 1 !important;
-  }
-  
-  /* ==========================================================================
-     Artist Header Styles
-     ========================================================================== */
-  
-  .artist-overlay {
+}
+
+/* ==========================================================================
+   Artist Header Styles
+   ========================================================================== */
+
+.artist-overlay {
     background: rgba(0, 0, 0, 0.7) !important;
     height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: end !important;
     padding: 2rem !important;
-  }
-  
-  .artist-info {
+}
+
+.artist-info {
     color: white !important;
-  }
-  
-  .verified-badge {
+}
+
+.verified-badge {
     color: #1DB954 !important;
-  }
-  
-  /* ==========================================================================
-     Upload Popup Styles
-     ========================================================================== */
-  
-  /* Overlay */
-  .upload-popup-overlay {
+}
+
+/* ==========================================================================
+   Upload Popup Styles
+   ========================================================================== */
+
+/* Overlay */
+.upload-popup-overlay {
     display: none;
     position: fixed !important;
     top: 0 !important;
@@ -105,10 +105,10 @@
     justify-content: center !important;
     align-items: center !important;
     z-index: 50 !important;
-  }
-  
-  /* Container */
-  .upload-popup {
+}
+
+/* Container */
+.upload-popup {
     display: inline;
     background: #1a1a1a !important;
     border-radius: 10px !important;
@@ -118,51 +118,51 @@
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25) !important;
     animation: scaleIn 0.3s ease-in-out !important;
     text-align: center !important;
-  }
-  
-  /* Header */
-  .upload-popup-header {
+}
+
+/* Header */
+.upload-popup-header {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
     margin-bottom: 1.5rem !important;
-  }
-  
-  .upload-popup-header h2 {
+}
+
+.upload-popup-header h2 {
     color: white !important;
     font-size: 1.5rem !important;
-  }
-  
-  .close-button {
+}
+
+.close-button {
     background: none !important;
     border: none !important;
     font-size: 1.5rem !important;
     color: white !important;
     cursor: pointer !important;
-  }
-  
-  /* ==========================================================================
-     Form Styles (Consistent Across Popups)
-     ========================================================================== */
-  
-  /* Form Group */
-  .upload-popup .form-group {
+}
+
+/* ==========================================================================
+   Form Styles (Consistent Across Popups)
+   ========================================================================== */
+
+/* Form Group */
+.upload-popup .form-group {
     margin-bottom: 1rem !important;
     text-align: left !important;
-  }
-  
-  .upload-popup .form-group label {
+}
+
+.upload-popup .form-group label {
     display: block !important;
     font-size: 0.875rem !important;
     margin-bottom: 0.5rem !important;
     color: #cccccc !important;
-  }
-  
-  /* Consistent Input Styling */
-  .upload-popup .form-group input[type="text"],
-  .upload-popup .form-group input[type="date"],
-  .upload-popup .form-group input[type="file"],
-  .upload-popup .form-group select {
+}
+
+/* Consistent Input Styling */
+.upload-popup .form-group input[type="text"],
+.upload-popup .form-group input[type="date"],
+.upload-popup .form-group input[type="file"],
+.upload-popup .form-group select {
     width: 100% !important;
     padding: 0.75rem !important;
     border: none !important;
@@ -175,38 +175,38 @@
     box-sizing: border-box !important; /* Ensure padding doesn't break layout */
     outline: none !important; /* Remove default focus outline */
     transition: border-color 0.2s ease-in-out !important;
-  }
-  
-  .upload-popup .form-group input[type="file"] {
+}
+
+.upload-popup .form-group input[type="file"] {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
-  }
-  
-  /* Special styling for select dropdowns */
-  .upload-popup .form-group select {
+}
+
+/* Special styling for select dropdowns */
+.upload-popup .form-group select {
     appearance: none !important;
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") !important;
     background-repeat: no-repeat !important;
     background-position: right 0.75rem center !important;
     background-size: 1rem !important;
-  }
-  
-  /* Focus state for inputs */
-  .upload-popup .form-group input[type="text"]:focus,
-  .upload-popup .form-group input[type="date"]:focus,
-  .upload-popup .form-group input[type="file"]:focus,
-  .upload-popup .form-group select:focus {
+}
+
+/* Focus state for inputs */
+.upload-popup .form-group input[type="text"]:focus,
+.upload-popup .form-group input[type="date"]:focus,
+.upload-popup .form-group input[type="file"]:focus,
+.upload-popup .form-group select:focus {
     border-color: #1d5bb9 !important;
-  }
-  
-  /* Options within select dropdowns */
-  .upload-popup .form-group select option {
+}
+
+/* Options within select dropdowns */
+.upload-popup .form-group select option {
     background: #1a1a1a !important;
     color: white !important;
-  }
-  
-  /* Submit Button */
-  .submit-button {
+}
+
+/* Submit Button */
+.submit-button {
     width: 100% !important;
     background: #1d5bb9 !important;
     color: white !important;
@@ -216,46 +216,48 @@
     border-radius: 0.25rem !important;
     cursor: pointer !important;
     transition: background 0.3s ease !important;
-  }
-  
-  .submit-button:hover {
+}
+
+.submit-button:hover {
     background: #174994 !important;
-  }
-  
-  /* ==========================================================================
-     Animations
-     ========================================================================== */
-  
-  @keyframes fadeIn {
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes fadeIn {
     from {
-      opacity: 0;
+        opacity: 0;
     }
+
     to {
-      opacity: 1;
+        opacity: 1;
     }
-  }
-  
-  @keyframes scaleIn {
+}
+
+@keyframes scaleIn {
     from {
-      transform: scale(0.9);
+        transform: scale(0.9);
     }
+
     to {
-      transform: scale(1);
+        transform: scale(1);
     }
-  }
-  
-  /* ==========================================================================
-     Responsive Design (Example)
-     ========================================================================== */
-  
-  /* Adjustments for larger screens */
-  @media (min-width: 768px) {
+}
+
+/* ==========================================================================
+   Responsive Design (Example)
+   ========================================================================== */
+
+/* Adjustments for larger screens */
+@media (min-width: 768px) {
     .sidebar {
-      flex-basis: 250px !important;
-      flex-shrink: 0 !important;
+        flex-basis: 250px !important;
+        flex-shrink: 0 !important;
     }
-  
+
     .main-content {
-      flex-grow: 1 !important;
+        flex-grow: 1 !important;
     }
-  }
+}

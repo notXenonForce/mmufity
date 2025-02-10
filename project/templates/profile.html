@@ -30,19 +30,30 @@
 
     <!-- Welcome User -->
     <div class="sidebar-section">
-      <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
-      <b>Welcome, {{user.username}}</b>
+      <span class="sidebar-link-icon" style="display: inline-block; margin-left: 14px;">👤</span>
+      {% if user.is_authenticated %}
+      <b>Welcome, <span style="display: inline-block; margin-left: 57px;">{{ user.username }}</span></b>
+      {% else %}
+      <b>Welcome, Guest</b>
+      {% endif %}
       <br>
 
+      {% if user.is_authenticated %}
       <a href="/logout">
           <span class="sidebar-link-icon">↪️</span>
           <b>Logout</b>
       </a>
+      {% else %}
+      <a href="/login">
+          <span class="sidebar-link-icon">↩</span>
+          <b>Login</b>
+      </a>
+      {% endif %}
   </div>
 
-    <!-- Top Sidebar -->
+    <!-- Artist Sidebar -->
     <div class="sidebar-section">
-        <a href="#" class="sidebar-link active">
+        <a href="{% url 'artist_home' %}" class="sidebar-link active">
             <span class="sidebar-link-icon">🏠</span>
             Home
         </a>
@@ -110,8 +121,8 @@
   <div class="divide-y divide-gray-800">
     {% for track in tracks %}
     <!-- Single Track Row -->
-    <a href="{% url 'tracks' %}?track_id={{ track.id }}" class="flex justify-between items-center py-3 block hover:bg-gray-700">  <!-- Added link here -->
-      <div class="flex items-center space-x-4">
+    <div class="flex justify-between items-center py-3">  <!-- Wrapper div for flex layout -->
+      <a href="{% url 'tracks' %}?track_id={{ track.id }}" class="flex items-center space-x-4 hover:bg-gray-700 py-2 px-4 rounded-md w-full">  <!-- Added link here -->
         {% if track.album and track.album.cover_image %}
         <img src="{{ track.album.cover_image.url }}" alt="Album Cover" class="w-12 h-12 object-cover">
         {% else %}
@@ -121,15 +132,64 @@
           <p class="text-base font-medium">{{ track.music_name }}</p>
           <p class="text-xs text-gray-400">{{ user.username }}</p>
         </div>
-      </div>
-    </a>  <!-- Close link here -->
+      </a>  <!-- Close link here -->
+      <button class="edit-songs text-gray-500 hover:text-gray-300 focus:outline-none" data-track-id="{{ track.id }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+        </svg>
+      </button>
+    </div>
     {% empty %}
     <p>No songs uploaded yet.</p>
     {% endfor %}
     <!-- Repeat for other tracks -->
   </div>
-  <!-- <a href="#" class="text-green-500 text-sm">See more</a> -->
 </div>
+    <div id="editSongPopupOverlay" class="upload-popup-overlay" style="display: none;">
+    <div class="upload-popup">
+        <div class="upload-popup-header">
+            <h2>Edit Song</h2>
+            <button id="closeEditSongPopup" class="close-button">×</button>
+        </div>
+        <!-- Inside the Edit Song Pop-up -->
+<form id="editSongForm" method="post" action="" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="update_song">  <!-- Hidden input -->
+  <div class="form-group">
+      <label for = "{{ form.music_name.id_for_label }}">Music Name</label>
+      {{ form.music_name }}
+  </div>
+  <input type="hidden" name="track_id" value="">
+  <button type="submit" class="submit-button" name = "edit_music_name">Submit</button>
+</form>
+    </div>
+  </div>
+  <script>
+
+         //Pop up code
+      document.addEventListener('DOMContentLoaded', function() {
+        const editSongButtons = document.querySelectorAll('.edit-songs');
+        const editSongPopupOverlay = document.getElementById('editSongPopupOverlay');
+        const closeEditSongPopup = document.getElementById('closeEditSongPopup');
+        const editSongForm = document.getElementById('editSongForm'); // Get the form
+        editSongButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                editSongPopupOverlay.style.display = 'flex';
+                const trackId = button.dataset.trackId; // Get the track ID from the button
+                editSongForm.action = `/edit_song/${trackId}/`; // Set the form's action URL dynamically
+            });
+        });
+        closeEditSongPopup.addEventListener('click', () => {
+            editSongPopupOverlay.style.display = 'none';
+        });
+        window.addEventListener('click', (event) => {
+            if (event.target === editSongPopupOverlay) {
+                editSongPopupOverlay.style.display = 'none';
+            }
+        });
+    });
+
+  </script>
 
   <!-- Upload Song Pop-up -->
   <div id="uploadPopupOverlay" class="upload-popup-overlay">

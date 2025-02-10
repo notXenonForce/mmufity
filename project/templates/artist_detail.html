@@ -1,0 +1,151 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ artist.user.username }} - Artist Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
+    <style>
+        /* Style for the header banner area */
+        .artist-header {
+            height: 600px;
+            width: 100%;
+            object-fit: cover; /* Ensure image covers the area without distortion */
+            object-position: center 25%; /* Center the image */
+        }
+
+        .banner-container {
+            position: relative;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            color: white;
+        }
+        .track-row {
+            display: block; /* Make the whole row clickable */
+            text-decoration: none; /* Remove underline from the link */
+            color: inherit; /* Inherit the text color from parent */
+            transition: background-color 0.2s ease; /* Smooth background color transition */
+            padding: 0.75rem 0; /* Add padding to the row */
+        }
+
+        .track-row:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* Lighten the background on hover */
+        }
+    </style>
+</head>
+<body class="bg-black text-white flex">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Spotify Logo -->
+        <div class="logo-container">
+            <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+        </div>
+
+        <!-- Welcome User -->
+        <div class="sidebar-section">
+            <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
+            {% if user.is_authenticated %}
+            <b>Welcome, {{user.username}}</b>
+            {% else %}
+            <b>Welcome, Guest</b>
+            {% endif %}
+            <br>
+
+            {% if user.is_authenticated %}
+            <a href="/logout">
+                <span class="sidebar-link-icon">↪️</span>
+                <b>Logout</b>
+            </a>
+            {% else %}
+            <a href="/login">
+              <span class="sidebar-link-icon">↩</span>
+              <b>Login</b>
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- User Sidebar -->
+        <div class="sidebar-section">
+            <a href="/" class="sidebar-link">
+                <span class="sidebar-link-icon">🏠</span>
+                Home
+            </a>
+            <a href="/search/" class="sidebar-link">
+                <span class="sidebar-link-icon">🔍</span>
+                Search
+            </a>
+            <a href="/user_home/" class="sidebar-link">
+                <span class="sidebar-link-icon">🎵</span>
+                Your Library
+            </a>
+            <a href="#" class="sidebar-link">
+                <span class="sidebar-link-icon">💜</span>
+                <span class="sidebar-link-text">Liked Songs</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1">
+        <!-- Artist Header -->
+        <div class="banner-container relative">
+            <img class="artist-header" src="{% if artist.banner_image %} {{ artist.banner_image.url }} {% else %} {% static 'Images/IUprofile.jpg' %} {% endif %}" alt="{{ artist.user.username }} Banner">
+            <div class="banner-overlay">
+                <h1 class="text-5xl font-bold text-white mt-2">{{ artist.user.username }}</h1>
+                <p class="text-lg text-gray-300">Artist</p>
+            </div>
+        </div>
+
+        <!-- Artist Details Section -->
+        <div class="p-5">
+            <h2 class="text-2xl font-bold mb-4">Albums</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {% for album in artist.album_set.all %}
+                <a href="{% url 'album_detail' pk=album.pk %}" class="relative">
+                    <img src="{% if album.cover_image %} {{ album.cover_image.url }} {% else %} {% static 'Images/IUlogo.jpg' %} {% endif %}" alt="{{ album.name }}" class="w-full h-48 object-cover rounded-md">
+                    <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-70 text-white p-2">
+                        <h3 class="text-sm font-semibold">{{ album.name }}</h3>
+                    </div>
+                </a>
+                {% empty %}
+                <p>No albums created yet.</p>
+                {% endfor %}
+            </div>
+
+            <h2 class="text-2xl font-bold mt-8 mb-4">Popular Tracks</h2>
+            <div class="divide-y divide-gray-800">
+                {% for track in artist.music_set.all %}
+                <a href="{% url 'tracks' %}?track_id={{ track.id }}" class="track-row">
+                    <div class="flex justify-between items-center py-3">
+                        <div class="flex items-center space-x-4">
+                            {% if track.album and track.album.cover_image %}
+                            <img src="{{ track.album.cover_image.url }}" alt="Album Cover" class="w-12 h-12 object-cover">
+                            {% else %}
+                            <img src="{% static 'Images/IUlogo.jpg' %}" alt="Default Song Image" class="w-12 h-12">
+                            {% endif %}
+                            <div>
+                                <p class="text-base font-medium">{{ track.music_name }}</p>
+                                <p class="text-xs text-gray-400">{{ track.album.name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <p>No songs uploaded yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

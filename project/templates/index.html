@@ -2,23 +2,27 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale: 1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mmufity</title>
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
 </head>
-<body style="margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;">
+
+<body style="margin: 5px; padding: 5px;; background:#121212; font-family:Arial, sans-serif; color:#fff;">
+
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo-container">
-            <img src="{% static 'Images\logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            <img src="{% static 'Images\logo.png' %}" style="width: 210px; height: 89.5px; padding: 20px; box-sizing: border-box;">
         </div>
 
         <!-- Welcome User -->
         <div class="sidebar-section">
-            <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
+            <span class="sidebar-link-icon" style="display: inline-block; margin-left: 14px;">👤</span>
             {% if user.is_authenticated %}
-            <b>Welcome, {{user.username}}</b>
+            <b>Welcome, <span style="display: inline-block; margin-left: 57px;">{{ user.username }}</span></b>
             {% else %}
             <b>Welcome, Guest</b>
             {% endif %}
@@ -31,92 +35,88 @@
             </a>
             {% else %}
             <a href="/login">
-              <span class="sidebar-link-icon">↩</span>
-              <b>Login</b>
+                <span class="sidebar-link-icon">↩</span>
+                <b>Login</b>
             </a>
             {% endif %}
         </div>
 
-        <!-- Top section of the sidebar -->
+        <!-- User Sidebar -->
         <div class="sidebar-section">
-            <a href="#" class="sidebar-link active">
+            <a href="/" class="sidebar-link active">
                 <span class="sidebar-link-icon">🏠</span>
                 Home
             </a>
-            <a href="search" class="sidebar-link">
+            <a href="/search/" class="sidebar-link">
                 <span class="sidebar-link-icon">🔍</span>
                 Search
             </a>
-            <a href="user_home" class="sidebar-link">
+            <a href="/user_home/" class="sidebar-link">
                 <span class="sidebar-link-icon">🎵</span>
                 Your Library
             </a>
-        </div>
-
-        <!-- Bottom section of the sidebar -->
-        <div class="sidebar-section">
             <a href="#" class="sidebar-link active">
                 <span class="sidebar-link-icon">💜</span>
                 <span class="sidebar-link-text">Liked Songs</span>
             </a>
-            <!-- Repeat for each item -->
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-link-icon">🎶</span>
-                <span class="sidebar-link-text">K-Pop</span>
-            </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-link-icon">👤</span>
-                <span class="sidebar-link-text">YOASOBI</span>
-            </a>
-            <!-- ... more links ... -->
         </div>
     </div>
 
-    <div style="margin-left:240px; padding:20px;">
+    <!-- Main Content -->
+    <div class="flex-1 main-content" style="margin-left: 240px;">
         <header class="header-container">
-            <div class="search-bar" style="width: 390px;">
-                <input type="search" placeholder="What do you want to listen to?" aria-label="Search">
+            <form action="{% url 'search' %}" method="get" class="search-bar" style="width: 390px;">
+                <input type="search" name="q" placeholder="What do you want to listen to?" aria-label="Search">
                 <button type="submit" aria-label="Search">
                     🔍
                 </button>
-            </div>
+            </form>
             <div class="index-title">Artists</div>
         </header>
 
-
-        <main style="padding-top:20px;">
-            <section style=" margin-top:0px; padding:0px; overflow-x:auto; white-space:nowrap;">
-              {% for artist in artists %}
-              <!-- Artist Card -->
-              <div class="artist-card">
-                {% if artist.banner_image %}
-                <img src="{{ artist.banner_image.url }}" style="width:150px; height:150px; border-radius:50%;">
-                {% else %}
-                <img src="{% static 'Images/default_artist_logo.png' %}" style="width:150px; height:150px; border-radius:50%;">
-                {% endif %}
-                <div class="artist-info">
-                  <div class="artist-name">{{ artist.username }}</div>
-                  <div class="artist-title">Artist</div>
-                </div>
-              </div>
-              {% endfor %}
+        <main class="main-section">
+            <section class="artist-section">
+                {% for artist in artists %}
+                <!-- Artist Card -->
+                <a href="{% url 'artist_detail' artist.pk %}" class="card-link">
+                    <div class="artist-card">
+                        {% if artist.banner_image %}
+                        <img src="{{ artist.banner_image.url }}" class="artist-banner"
+                            alt="{{ artist.username }}'s Banner">
+                        {% else %}
+                        <img src="{% static 'Images/default_artist_logo.png' %}" class="artist-banner"
+                            alt="Default Artist Logo">
+                        {% endif %}
+                        <div class="artist-info">
+                            <div class="artist-name">{{ artist.username }}</div>
+                            <div class="artist-title">Artist</div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
                 <!-- Add more content cards here -->
             </section>
-          
-          <!-- Browse All Section -->
-          <div class="index-title">Browse all albums</div>
 
-          <div class="browse-all">
-            {% for album in albums %}
-            <div class="category-card">
-              {% if album.cover_image %}
-              <img src="{{ album.cover_image.url }}" alt="{{ album.name }}">
-              {% else %}
-              <img src="{% static 'Images/default_album_cover.png' %}" alt="{{ album.name }}">
-              {% endif %}
-              <div class="category-title">{{ album.name }}</div>
+            <!-- Browse All Section -->
+            <div class="index-title">Browse all albums</div>
+
+            <div class="browse-all">
+                {% for album in albums %}
+                <a href="{% url 'album_detail' album.pk %}" class="card-link">
+                    <div class="category-card">
+                        {% if album.cover_image %}
+                        <img src="{{ album.cover_image.url }}" alt="{{ album.name }}" class="album-banner">
+                        {% else %}
+                        <img src="{% static 'Images/default_album_cover.png' %}" alt="{{ album.name }}"
+                            class="album-banner">
+                        {% endif %}
+                        <div class="category-title">{{ album.name }}</div>
+                    </div>
+                </a>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
+        </main>
+    </div>
 </body>
+
 </html>

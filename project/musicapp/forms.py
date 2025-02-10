@@ -1,5 +1,5 @@
 from django import forms
-from .models import Music, Album, ArtistAccount  # Import your Music and Album models
+from .models import Music, Album, ArtistAccount, Playlist, UserAccount  # Import your Music and Album models
 
 class UploadSongForm(forms.ModelForm):
     class Meta:
@@ -23,3 +23,21 @@ class BannerUploadForm(forms.ModelForm):  # Now a ModelForm!
     class Meta:
         model = ArtistAccount  # Use ArtistAccount
         fields = ['banner_image']  # Only include the banner_image
+
+class UserBannerUploadForm(forms.ModelForm):  # Create a separate form for UserAccount
+    class Meta:
+        model = UserAccount  # Use UserAccount
+        fields = ['banner_image']  # Only include the banner_image
+
+class PlaylistForm(forms.ModelForm):
+    class Meta:
+        model = Playlist
+        fields = ['name', 'cover_image']
+
+class EditSongForm(forms.ModelForm):
+    class Meta:
+        model = Music
+        fields = ['music_name']
+        widgets = {
+            'music_name': forms.TextInput(attrs={'class': 'form-control'}),
+        }
