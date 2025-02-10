@@ -222,6 +222,23 @@
     background: #174994 !important;
 }
 
+/* Style to show which item is being selected for upload to the music */
+.search-result-item.selected {
+    background-color: #4CAF50;  /* Green background */
+    color: white;
+    }
+    /* Style to show a better look and feel */
+.search-result-item {
+    padding: 8px 12px;  /* Some padding to make them bigger */
+    margin: 4px 0;       /* Some spacing between items */
+    cursor: pointer;     /* Change cursor to a pointer on hover */
+    border-radius: 4px;   /* Optional: Rounded corners */
+    transition: background-color 0.2s; /* Smooth background color transition */
+    }
+
+.search-result-item:hover {
+    background-color: #f0f0f0; /* Lighter gray on hover */
+    }
 /* ==========================================================================
    Animations
    ========================================================================== */

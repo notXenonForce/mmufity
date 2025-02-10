@@ -1,0 +1,220 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Streaming Service</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+</head>
+<body style="margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;">
+    <!-- Sidebar remains unchanged -->
+    <div class="sidebar">
+        <!-- Spotify Logo -->
+        <div class="logo-container">
+            <a href="{% url 'artist_home' %}">
+                <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <span class="sidebar-link-icon" style="display: inline-block; margin-left: 14px;">👤</span>
+            {% if user.is_authenticated %}
+            <b>Welcome, <span style="display: inline-block; margin-left: 57px;">{{ user.username }}</span></b>
+            {% else %}
+            <b>Welcome, Guest</b>
+            {% endif %}
+            <br>
+            <a href="{% url 'artist_home' %}" class="sidebar-link">
+                <span class="sidebar-link-icon">🏠</span>
+                Home
+            </a>
+            {% if user.is_authenticated %}
+            <a href="/logout">
+                <span class="sidebar-link-icon">↪️</span>
+                <b>Logout</b>
+            </a>
+            {% else %}
+            <a href="/login">
+              <span class="sidebar-link-icon">↩</span>
+              <b>Login</b>
+            </a>
+            {% endif %}
+          </div>
+    </div>
+    <!-- Main content area where we will add the music player -->
+    <div class="music-player" style="margin-left:240px; padding:20px; display: flex; justify-content: center; align-items: center; height: calc(100vh - 90px);">
+        <!-- Music Player Interface -->
+        <div class="player-container">
+            {% if album and album.cover_image %}
+            <img class="album-cover" src="{{ album.cover_image.url }}" alt="Album Cover" style="padding-top: 100px">
+            {% else %}
+            <img class="album-cover" src="{% static 'Images/IUlogo.jpg' %}" alt="Album Cover" style="padding-top: 100px">
+            {% if album %}
+            {% endif %}
+            {% endif %}
+            <div class="song-info">
+                <h1 class="song-title">{% if selected_track %}{{ selected_track.music_name }}{% else %}{% if playlist %}{{playlist.name}}{% else %}No playlist Selected{% endif %}{% endif %}</h1>
+                <h2 class="artist-name" style="font-size: 0.9rem;">{% if selected_track and selected_track.artist %}{{ selected_track.artist.user.username }}{% elif tracks|length > 0 and tracks.0.artist %}{{ tracks.0.artist.user.username }}{% else %}Unknown Artist{% endif %}</h2>
+            </div>
+            <div class="player-controls">
+                <button id="prev" class="control-btn">◄</button>
+                <button id="play-pause" class="control-btn play-btn" style="color: rgb(29 91 185)">►</button>
+                <button id="next" class="control-btn">►</button>
+            </div>
+            <div class="progress-bar" id="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="time-stamps">
+                <span id="current-time">0:00</span>
+                <span id="total-duration">0:00</span>
+            </div>
+            <div class = "song_list">
+                {% if tracks %}
+                  <ul>
+                    {% for track in tracks %}
+                      <li class="track {% if track == selected_track %}selected{% endif %}" data-src="{{ track.audio_file.url }}" data-index="{{ forloop.counter0 }}">{{ track.music_name }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <audio id="audio-player" src="{% if selected_track %}{{ selected_track.audio_file.url }}{% endif %}"></audio>
+    </div>
+
+    <script>
+        const audioPlayer = document.getElementById('audio-player');
+        const playPauseBtn = document.getElementById('play-pause');
+        const trackList = document.querySelectorAll('.track');
+        let currentTrackIndex = 0;
+        const progressContainer = document.getElementById('progress-bar'); //Make sure its the correct ID
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('total-duration');
+    
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60);
+            let seconds = Math.floor(time % 60);
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            return `${minutes}:${seconds}`;
+        }
+    
+        function updateProgress() {
+            const { duration, currentTime } = audioPlayer;
+            if (isNaN(duration)) return; // Skip if duration is still invalid
+    
+            const progressPercent = (currentTime / duration) * 100;
+            progress.style.width = `${progressPercent}%`;
+            currentTimeEl.textContent = formatTime(currentTime);
+        }
+    
+        function setProgress(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audioPlayer.duration;  // Get the duration *directly*
+    
+            if (isNaN(duration)) return;  //Ensure its a valid number for the operation
+    
+            const newTime = (clickX / width) * duration; //This is where the updated duration value has to be provided from the get go
+            audioPlayer.currentTime = newTime;
+        }
+    
+        function setDuration() { //No need to add e param, just to get duration
+            const duration = audioPlayer.duration; //Update the correct value from function call
+            if (isNaN(duration)) return; //Validate that the duration is a number before rendering
+    
+            durationEl.textContent = formatTime(duration);
+        }
+    
+        function loadTrack(index) {
+            const trackElement = trackList[index];
+            const trackSrc = trackElement.getAttribute('data-src');
+    
+            // Remove 'selected' class from previously selected track
+            trackList.forEach(track => track.classList.remove('selected'));
+    
+            audioPlayer.src = trackSrc;
+            audioPlayer.load();
+    
+            //Add event listenrs and trigger if is loaded, this is a more safe way
+            audioPlayer.addEventListener('loadedmetadata', setDuration);
+            audioPlayer.addEventListener('timeupdate', updateProgress);
+    
+            playPauseBtn.textContent = '▶';
+            trackElement.classList.add('selected');
+            updateDisplay(trackElement);
+        }
+    
+        function updateDisplay(trackElement) {
+            const trackName = trackElement.textContent;
+            document.querySelector('.song-title').textContent = trackName;
+        }
+    
+        // Load selected song or first song on page load
+        {% if selected_track %}
+            const selectedTrackElement = document.querySelector('.track.selected');
+            if (selectedTrackElement) {
+                let foundIndex = Array.from(trackList).findIndex(el => el === selectedTrackElement);
+                if (foundIndex !== -1) {
+                    currentTrackIndex = foundIndex;
+                }
+                loadTrack(currentTrackIndex);
+            }
+        {% endif %}
+    
+        playPauseBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playPauseBtn.textContent = '⏸';
+            } else {
+                audioPlayer.pause();
+                playPauseBtn.textContent = '▶';
+            }
+        });
+    
+        trackList.forEach((track, index) => {
+            track.addEventListener('click', () => {
+                currentTrackIndex = index;
+                loadTrack(currentTrackIndex);
+                audioPlayer.play();
+                playPauseBtn.textContent = '⏸';
+            });
+        });
+    
+        function trackNext() {
+            if (!trackList || trackList.length === 0) return;
+    
+            currentTrackIndex++;
+            if (currentTrackIndex >= trackList.length) {
+                currentTrackIndex = 0;
+            }
+            loadTrack(currentTrackIndex);
+            audioPlayer.play();
+            playPauseBtn.textContent = '⏸';
+        }
+    
+        function trackPrevious() {
+            if (!trackList || trackList.length === 0) return;
+    
+            currentTrackIndex--;
+            if (currentTrackIndex < 0) {
+                currentTrackIndex = trackList.length - 1;
+            }
+            loadTrack(currentTrackIndex);
+            audioPlayer.play();
+            playPauseBtn.textContent = '⏸';
+        }
+    
+        document.getElementById('next').addEventListener('click', trackNext);
+        document.getElementById('prev').addEventListener('click', trackPrevious);
+        audioPlayer.addEventListener('ended', trackNext);
+    
+        progressContainer.addEventListener('click', setProgress);
+    
+        // Initial setting of duration, load one time
+        audioPlayer.addEventListener('loadedmetadata', setDuration);
+    </script>
+</body>
+</html>

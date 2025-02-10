@@ -70,5 +70,6 @@ class Playlist(models.Model):
     name = models.CharField(max_length=255)
     cover_image = models.ImageField(upload_to='album_covers/', null=True, blank=True)  # Add album cover image
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    music_set = models.ManyToManyField(Music)
     def __str__(self):
         return self.name

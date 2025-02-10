@@ -3,12 +3,13 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import User, auth
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import UploadSongForm, AlbumForm, BannerUploadForm, PlaylistForm, EditSongForm # Import forms
+from .forms import UploadSongForm, AlbumForm, BannerUploadForm, PlaylistForm, EditSongForm, UserBannerUploadForm # Import forms
 from .models import Music, Album, ArtistAccount, Playlist # Import models
 from .validators import validate_audio_file
 from django.core.exceptions import ValidationError
 from django.db.models import Max, Min
 from django.db.models import Q
+from django.http import JsonResponse
 
 # Helper functions for user type checks
 def is_artist(user):
@@ -110,7 +111,38 @@ def user_home(request):
 def search(request):
     return render(request, 'search.html')
 
-from .forms import UserBannerUploadForm, PlaylistForm # Make sure you have the correct import statement
+def music_playlist(request): 
+    track_id = request.GET.get('track_id')  # Get track ID from query parameters
+    playlist_id = request.GET.get('playlist_id')  # Get playlist ID from query parameters #Changed variable
+    selected_track = None
+    album = None
+    tracks = []
+    playlist = None #Define the playlist as None initially
+
+    try:
+        if track_id:
+            selected_track = get_object_or_404(Music, pk=track_id)
+            playlist = selected_track.playlist if selected_track.playlist else None
+            album = selected_track.album if selected_track.album else None
+        elif playlist_id:
+            playlist = get_object_or_404(Playlist, pk=playlist_id, user = request.user.useraccount) #Ensures only get what we are looking for
+            tracks = playlist.music_set.all()  #Only look for the playlist and nothing more
+            selected_track = tracks[0] if tracks else None
+            album = selected_track.album if selected_track.album else None
+    except Playlist.DoesNotExist:
+         selected_track = None
+
+    except Music.DoesNotExist:
+        playlist = None #If selected code is false, can't run
+        selected_track = None #If selected code is false, can't run
+    except Exception as e:
+        playlist = None
+        selected_track = None
+
+    context = {'selected_track': selected_track, 'playlist': playlist, 'tracks': tracks, 'album': album,} #Changed code
+    return render(request, 'music_playlist.html', context) #Changed code
+
+ # Make sure you have the correct import statement
 @login_required(login_url='login')
 def user_home(request):
     if request.method == 'POST':
@@ -388,22 +420,11 @@ def album_detail(request, pk):
     album = get_object_or_404(Album, pk=pk)
     context = {'album': album}
     return render(request, 'album_detail.html', context)
+@login_required
 def playlist_detail(request, pk):
     playlist = get_object_or_404(Playlist, pk=pk)
-    context = {'playlist': playlist}
-    return render(request, 'playlist_detail.html', context)
-
-from django.http import JsonResponse
-
-from django.http import JsonResponse
-from django.shortcuts import redirect
-from .models import Music, ArtistAccount # Make sure you are importing these correctly!
-from .forms import UploadSongForm # Same here, check it
-from django.contrib import messages
-from django.core.exceptions import ValidationError
-from .validators import validate_audio_file # you should import your validator as well
-from django.contrib.auth.decorators import login_required # and of course make sure people login to upload music
-
+    available_music = Music.objects.all()
+    return render(request, 'playlist_detail.html', {'playlist': playlist, 'available_music': available_music})
 
 @login_required
 def search_music_for_playlist(request):
@@ -415,39 +436,23 @@ def search_music_for_playlist(request):
         else:
             data = []
         return JsonResponse(data, safe=False)
+    
+@login_required
+def add_music_to_playlist(request, pk):
+    playlist = get_object_or_404(Playlist, pk=pk)
 
-    elif request.method == 'POST':
-        upload_form = UploadSongForm(request.POST, request.FILES)
-        if upload_form.is_valid():
-            try:
-                # Validate the file using your custom validator
-                validate_audio_file(request.FILES['audio_file'])
+    if request.method == 'POST':
+        music_id = request.POST.get('music_id')
+        try:
+            music = Music.objects.get(pk=music_id)
+            playlist.music_set.add(music)
+            messages.success(request, f"Added '{music.music_name}' to '{playlist.name}'")
+        except Music.DoesNotExist:
+            messages.error(request, "Invalid music selection.")
+    else:
+        messages.error(request, "Invalid request method.")
 
-                # If validation passes, save the form
-                new_song = upload_form.save(commit=False)  # Don't save to the database yet
-
-                #Getting the ArtistAccount associated with the logged in user:
-                artist_account = ArtistAccount.objects.get(user=request.user) #Get the user, not username
-                new_song.artist = artist_account   # Access ArtistAccount through user
-
-                # **Here's the corrected album assignment:**
-                new_song.album = upload_form.cleaned_data['album']
-
-                new_song.save()  # Save the song to the database
-                messages.success(request, 'Song uploaded successfully!')
-                return JsonResponse({'success': True, 'message': 'Song uploaded successfully!'}) # Return a JSON on success
-
-            except ValidationError as e:
-                # If validation fails, add an error to the form
-                messages.error(request, e)  # Display validator error message.
-                return JsonResponse({'success': False, 'message': str(e)})  # return a JSON message
-            except Exception as e: # Catch other potential exceptions
-                messages.error(request, f"An unexpected error occurred: {e}")
-                return JsonResponse({'success': False, 'message': f"An unexpected error occurred: {e}"})
-
-        else:
-            messages.error(request, upload_form.errors)
-            return JsonResponse({'success': False, 'message': str(upload_form.errors)})
+    return redirect('playlist_detail', pk=pk)  # Redirect back to the playlist detail page
         
 @login_required
 @user_passes_test(is_artist)

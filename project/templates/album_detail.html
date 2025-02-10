@@ -112,7 +112,7 @@
             <h2 class="text-2xl font-bold mb-4">Tracks</h2>
             <div class="divide-y divide-gray-800">
                 {% for track in album.music_set.all %}
-                    <a href="{% url 'tracks' %}?track_id={{ track.id }}" class="track-row">
+                    <a href="{% url 'album' %}?album_id={{ album.id }}" class="track-row">
                         <div class="flex justify-between items-center py-3">
                             <div class="flex items-center space-x-4">
                                 <div>
@@ -128,5 +128,50 @@
             </div>
         </div>
     </div>
+    <script>
+        const uploadSongForm = document.getElementById('uploadSongForm');
+    const addMusicButton = document.getElementById('add-music-button');
+    const musicUploadOverlay = document.getElementById('musicUploadOverlay');
+    const closeUploadPopup = document.getElementById('closeUploadPopup');
+
+    addMusicButton.addEventListener('click', () => {
+        musicUploadOverlay.style.display = 'flex';
+    });
+
+    closeUploadPopup.addEventListener('click', () => {
+        musicUploadOverlay.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === musicUploadOverlay) {
+            musicUploadOverlay.style.display = 'none';
+        }
+    });
+
+    uploadSongForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch(`/search_music/`, {  // Replace with your URL
+            method: 'POST',
+            body: formData,  // Send the FormData object
+            headers: {
+                 'X-CSRFToken': getCookie('csrftoken')  // Get CSRF token (see helper function below)
+             },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Music upload successful");
+                musicUploadOverlay.style.display = 'none';
+                window.location.reload();  // Reload the page to show updated playlist
+            } else {
+                // Handle error
+                console.error("Music upload error");
+            }
+        });
+    });
+    </script>
 </body>
 </html>
