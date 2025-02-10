@@ -17,6 +17,18 @@ class ArtistAccount(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+class UserAccount(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    username = models.CharField(max_length=150, blank=True, null=True)  # Add username field
+    email = models.EmailField(blank=True, null=True)  # Add email field
+    banner_image = models.ImageField(upload_to='banners/', blank=True, null=True) #added upload_to
+
+    class Meta:
+        db_table = 'normal_user'
+
+    def __str__(self):
+        return self.user.username
 
 @receiver(pre_save, sender=ArtistAccount)
 def delete_old_banner(sender, instance, **kwargs):
@@ -35,6 +47,7 @@ def delete_old_banner(sender, instance, **kwargs):
 class Album(models.Model):
     name = models.CharField(max_length=255)
     cover_image = models.ImageField(upload_to='album_covers/', null=True, blank=True)  # Add album cover image
+    artists = models.ForeignKey(ArtistAccount, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -56,6 +69,6 @@ class Music(models.Model):
 class Playlist(models.Model):
     name = models.CharField(max_length=255)
     cover_image = models.ImageField(upload_to='album_covers/', null=True, blank=True)  # Add album cover image
-
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     def __str__(self):
         return self.name

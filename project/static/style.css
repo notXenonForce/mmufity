@@ -285,12 +285,6 @@
     cursor: pointer;
 }
 
-.search-title {
-    color: #fff;
-    font-size: 22px;
-    padding-top: 20px;
-}
-
 /* Sidebar Styles */
 .sidebar {
     background: #000;
@@ -388,7 +382,7 @@
 }
 
 /* Add more specific styles for badges if needed */
-.browse-all-title {
+.index-title {
     font-size: 24px;
     font-weight: bold;
     color: #fff;

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Music, Album  # Import your Music and Album models
+from .models import Music, Album, ArtistAccount  # Import your Music and Album models
 
 class UploadSongForm(forms.ModelForm):
     class Meta:
@@ -19,5 +19,7 @@ class AlbumForm(forms.ModelForm):  # Inherit from forms.ModelForm
         model = Album  # Specify the associated model
         fields = ['name', 'cover_image']  # List the fields from the model to include in the form
 
-class BannerUploadForm(forms.Form):
-    banner_image = forms.ImageField(required=True)
+class BannerUploadForm(forms.ModelForm):  # Now a ModelForm!
+    class Meta:
+        model = ArtistAccount  # Use ArtistAccount
+        fields = ['banner_image']  # Only include the banner_image

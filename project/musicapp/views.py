@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import User, auth
@@ -7,6 +7,7 @@ from .forms import UploadSongForm, AlbumForm, BannerUploadForm  # Import AlbumFo
 from .models import Music, Album, ArtistAccount
 from .validators import validate_audio_file
 from django.core.exceptions import ValidationError
+from django.db.models import Max, Min
 
 # Helper functions for user type checks
 def is_artist(user):
@@ -15,8 +16,85 @@ def is_artist(user):
 def is_admin(user):
     return user.is_staff and user.is_superuser  # Admins are is_staff and is_superuser
 
-def music(request):
-    return render(request, 'music.html')
+@login_required
+def music_tracks(request):
+    track_id = request.GET.get('track_id')
+    album_id = request.GET.get('album_id')
+    selected_track = None
+    tracks = []
+    album = None
+
+    try:
+        # Get the ArtistAccount for the logged-in user
+        artist_account = ArtistAccount.objects.get(user=request.user)
+
+        # Filter Music objects by the artist
+        all_tracks_for_artist = Music.objects.filter(artist=artist_account)
+
+        if track_id:
+            selected_track = get_object_or_404(Music, pk=track_id, artist=artist_account) # ensure only artist's tracks are selected
+            album = selected_track.album
+        elif album_id:
+            album = get_object_or_404(Album, pk=album_id)
+            tracks = all_tracks_for_artist.filter(album=album)
+            selected_track = tracks.first() if tracks else None
+        else:
+            tracks = all_tracks_for_artist  # Only get tracks for this artist
+
+        # Get the maximum track ID for the artist's music
+        max_track_id = all_tracks_for_artist.aggregate(Max('id'))['id__max'] or 1
+
+        # Get the *minimum* track ID (ID of the first track)
+        first_track_id = all_tracks_for_artist.aggregate(Min('id'))['id__min'] or 1
+
+        if max_track_id is None:
+            max_track_id = 1
+        if first_track_id is None:
+            first_track_id = 1
+
+    except ArtistAccount.DoesNotExist:
+        messages.error(request, "Artist account not found.  Please create one.")
+        max_track_id = 1
+        first_track_id = 1
+    except Music.DoesNotExist:
+         messages.error(request, "Music does not exist. Please upload one.")
+         max_track_id = 1
+         first_track_id = 1
+
+    except Exception as e:
+        messages.error(request, f"Error retrieving music: {e}")
+        max_track_id = 1
+        first_track_id = 1
+
+    context = {'selected_track': selected_track, 'album': album, 'tracks': tracks, 'max_track_id': max_track_id, 'first_track_id': first_track_id}
+    return render(request, 'music_tracks.html', context)
+
+def music_album(request):
+    track_id = request.GET.get('track_id')  # Get track ID from query parameters
+    album_id = request.GET.get('album_id')  # Get album ID from query parameters
+    selected_track = None
+    tracks = []
+
+    if track_id:
+        selected_track = get_object_or_404(Music, pk=track_id)
+        album = selected_track.album if selected_track.album else None
+
+    elif album_id:
+        album = get_object_or_404(Album, pk=album_id)
+        tracks = Music.objects.filter(album=album)
+        selected_track = tracks[0] if tracks else None
+    else:
+        album = None
+        selected_track = None
+
+    context = {'selected_track': selected_track, 'album': album, 'tracks': tracks}
+    return render(request, 'music_album.html', context)
+
+def user_home(request):
+    return render(request, 'profile_user.html')
+
+def search(request):
+    return render(request, 'search.html')
 
 @login_required(login_url='login')
 def index(request):
@@ -25,7 +103,19 @@ def index(request):
     elif is_artist(request.user):
         return redirect('artist_home')  # Redirect artists to artist home
     else:
-        return render(request, 'index.html')  # Regular users go to a generic home page
+        # Fetch Artists Data
+        artists = ArtistAccount.objects.all() # Get all artists
+
+    # Fetch Albums Data (You might want to limit this)
+        albums = Album.objects.all()  # Get all albums for now.  Consider using a slice or filtering.
+
+        context = {
+            'artists': artists, # Pass this to the context
+            'albums': albums,  # Pass this to the context
+            'user': request.user, #Useful to pass username to the view
+        }
+
+    return render(request, 'index.html', context)
 
 def login(request):
     if request.method == 'POST':
@@ -58,8 +148,7 @@ def signup_user(request):
                 messages.info(request, 'Username already exists!')
                 return redirect('signup_user')
             else:
-                user = User.objects.create_user(username=username, email=email, password=password)
-                user.is_staff = False  # Regular users must not have staff flag enabled
+                user = User.objects.create_user(username=username, email=email, password=password, is_staff=False)
                 user.save()
                 auth.login(request, user)
                 return redirect('/')
@@ -95,7 +184,6 @@ def signup_artist(request):
             return render(request, 'signup_artist.html', context={'request': request})
     else:
         return render(request, 'signup_artist.html', context={'request': request})
-
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
@@ -122,6 +210,9 @@ def artist_home(request):
     except ArtistAccount.DoesNotExist:
         tracks = []  # Handle the case where the artist account doesn't exist.
         messages.error(request, "Artist account not found.") #Inform Artist to recreate account
+
+    albums = Album.objects.filter(artists=artist_account)
+
     if request.method == 'POST' and request.FILES.get('banner_image'):
         banner_form = BannerUploadForm(request.POST, request.FILES, instance=request.user.artistaccount)
         if banner_form.is_valid():
@@ -180,10 +271,23 @@ def artist_home(request):
                 return redirect('artist_home')  # Redirect to a success page
 
 
-        else:  #Album form handling
+        else:  # Album form handling
             album_form = AlbumForm(request.POST, request.FILES)
             if album_form.is_valid():
-                album = album_form.save() #Save the object instead of saving the form
+                album = album_form.save(commit=False)  # Don't save yet
+
+                # Associate the album with the current artist
+                try:
+                    artist_account = ArtistAccount.objects.get(user=request.user)
+                    album.artists = artist_account  # Set the foreign key
+                except ArtistAccount.DoesNotExist:
+                    messages.error(request, "Artist account not found. Please create one.")
+                    return render(request, 'profile.html', context) #Render current html, but inform them of error
+                    # Or redirect to a page to create an ArtistAccount
+                    #return redirect('create_artist_account') # Replace with your URL
+
+                album.save()  # Now save the album
+                messages.success(request, "Album created successfully!")
                 return redirect('artist_home')
             else:
                 messages.error(request, "Album submission error")

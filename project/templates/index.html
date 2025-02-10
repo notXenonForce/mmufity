@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale: 1.0">
     <title>Mmufity</title>
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
 </head>
@@ -17,14 +17,24 @@
         <!-- Welcome User -->
         <div class="sidebar-section">
             <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
+            {% if user.is_authenticated %}
             <b>Welcome, {{user.username}}</b>
-            <br>
+            {% else %}
+            <b>Welcome, Guest</b>
+            {% endif %}
             <br>
 
+            {% if user.is_authenticated %}
             <a href="/logout">
                 <span class="sidebar-link-icon">↪️</span>
                 <b>Logout</b>
             </a>
+            {% else %}
+            <a href="/login">
+              <span class="sidebar-link-icon">↩</span>
+              <b>Login</b>
+            </a>
+            {% endif %}
         </div>
 
         <!-- Top section of the sidebar -->
@@ -33,11 +43,11 @@
                 <span class="sidebar-link-icon">🏠</span>
                 Home
             </a>
-            <a href="#" class="sidebar-link">
+            <a href="search" class="sidebar-link">
                 <span class="sidebar-link-icon">🔍</span>
                 Search
             </a>
-            <a href="#" class="sidebar-link">
+            <a href="user_home" class="sidebar-link">
                 <span class="sidebar-link-icon">🎵</span>
                 Your Library
             </a>
@@ -70,112 +80,43 @@
                     🔍
                 </button>
             </div>
-            <div class="search-title">Top Hits</div>
+            <div class="index-title">Artists</div>
         </header>
 
 
         <main style="padding-top:20px;">
             <section style=" margin-top:0px; padding:0px; overflow-x:auto; white-space:nowrap;">
-                <!-- Artist Card -->
-                <div class="artist-card">
-                    <img src="{% static 'Images\YOASOBIlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
-                    <div class="artist-info">
-                        <div class="artist-name">YOASOBI</div>
-                        <div class="artist-title">Artist</div>
-                    </div>
+              {% for artist in artists %}
+              <!-- Artist Card -->
+              <div class="artist-card">
+                {% if artist.banner_image %}
+                <img src="{{ artist.banner_image.url }}" style="width:150px; height:150px; border-radius:50%;">
+                {% else %}
+                <img src="{% static 'Images/default_artist_logo.png' %}" style="width:150px; height:150px; border-radius:50%;">
+                {% endif %}
+                <div class="artist-info">
+                  <div class="artist-name">{{ artist.username }}</div>
+                  <div class="artist-title">Artist</div>
                 </div>
-
-
-                <div class="artist-card">
-                    <img src="{% static 'Images\TaylorSwiftlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
-                    <div class="artist-info">
-                        <div class="artist-name">Taylor Swift</div>
-                        <div class="artist-title">Artist</div>
-                    </div>
-                </div>
-
-
-                <div class="artist-card">
-                    <img src="{% static 'Images\YonezuKenshilogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
-                    <div class="artist-info">
-                        <div class="artist-name">Yonezu Kenshi</div>
-                        <div class="artist-title">Artist</div>
-                    </div>
-                </div>
-
-
-                <div class="artist-card">
-                    <img src="{% static 'Images\ILLITlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
-                    <div class="artist-info">
-                        <div class="artist-name">ILLIT</div>
-                        <div class="artist-title">Artist</div>
-                    </div>
-                </div>
-
-
-                <div class="artist-card">
-                    <img src="{% static 'Images\TWICElogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
-                    <div class="artist-info">
-                        <div class="artist-name">TWICE</div>
-                        <div class="artist-title">Artist</div>
-                    </div>
-                </div>
-
-
-                <div class="artist-card">
-                    <img src="{% static 'Images\AlanWalkerlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
-                    <div class="artist-info">
-                        <div class="artist-name">Alan Walker</div>
-                        <div class="artist-title">Artist</div>
-                    </div>
-                </div>
-
-
-                <div class="artist-card">
-                    <img src="{% static 'Images\IUlogo.jpg' %}" style="width:150px; height:150px; border-radius:50%;">
-                    <div class="artist-info">
-                        <div class="artist-name">IU</div>
-                        <div class="artist-title">Artist</div>
-                    </div>
-                </div>
-              
-                
+              </div>
+              {% endfor %}
                 <!-- Add more content cards here -->
             </section>
           
           <!-- Browse All Section -->
-          <div class="browse-all-title">Browse all</div>
+          <div class="index-title">Browse all albums</div>
 
           <div class="browse-all">
+            {% for album in albums %}
             <div class="category-card">
-                <img src="{% static 'Images\IUlogo.jpg' %}" alt="Podcasts">
-                <div class="category-title">New Releases</div>
-              </div>
-
-            <div class="category-card">
-                <img src="https://i.scdn.co/image/ab67fb8200008e2c64adf130003faa51378e3d2b" alt="Podcasts">
-                <div class="category-title">Happy Christmas</div>
-              </div>
-            
-            <div class="category-card">
-                <img src="{% static 'Images\TWICElogo.jpg' %}" alt="Podcasts">
-                <div class="category-title">K-Pop</div>
-              </div>
-
-            <div class="category-card">
-                <img src="{% static 'Images\JayChoulogo.jpg' %}" alt="Podcasts">
-                <div class="category-title">Chinese Mix</div>
-              </div>
-            
-            <div class="category-card">
-                <img src="{% static 'Images\YonezuKenshilogo.jpg' %}" alt="Podcasts">
-                <div class="category-title">J-Pop</div>
-              </div>
-            
-            <div class="category-card">
-                <img src="{% static 'Images\AlanWalkerlogo.jpg' %}" alt="Podcasts">
-                <div class="category-title">EDM</div>
-              </div>
+              {% if album.cover_image %}
+              <img src="{{ album.cover_image.url }}" alt="{{ album.name }}">
+              {% else %}
+              <img src="{% static 'Images/default_album_cover.png' %}" alt="{{ album.name }}">
+              {% endif %}
+              <div class="category-title">{{ album.name }}</div>
+            </div>
+            {% endfor %}
         </div>
 </body>
 </html>
