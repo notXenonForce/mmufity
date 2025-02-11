@@ -126,15 +126,18 @@
     <div class="sidebar">
         <!-- Spotify Logo -->
         <div class="logo-container">
-            <img src="{% static 'Images/logo.png' %}"
-                style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            <a href="{% url 'index' %}">
+                <img src="{% static 'Images/logo.png' %}"
+                    style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            </a>
         </div>
 
         <!-- Welcome User -->
         <div class="sidebar-section">
             <span style="margin-left: 14px;" class="sidebar-link-icon">👤</span>
             {% if user.is_authenticated %}
-            <b>Welcome, {{user.username}}</b>
+            <b>Welcome, <br>
+                <span style="display: inline-block; margin-left: 57px;">{{ user.username }}</span></b>
             {% else %}
             <b>Welcome, Guest</b>
             {% endif %}
@@ -166,10 +169,6 @@
             <a href="/user_home/" class="sidebar-link">
                 <span class="sidebar-link-icon">🎵</span>
                 Your Library
-            </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-link-icon">💜</span>
-                <span class="sidebar-link-text">Liked Songs</span>
             </a>
         </div>
     </div>

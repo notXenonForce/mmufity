@@ -2,14 +2,14 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
-    <style>
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
+  <style>
     .artist-header {
       background-image: url('Images/IUlogo.jpg');
       background-size: cover;
@@ -18,29 +18,32 @@
     }
 
     .playlist-item {
-        position: relative;
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      position: relative;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
     .playlist-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
 
     .playlist-item a {
-        display: block;
-        text-decoration: none;
-        color: inherit;
+      display: block;
+      text-decoration: none;
+      color: inherit;
     }
   </style>
 </head>
+
 <body class="bg-black text-white flex">
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <!-- Spotify Logo -->
     <div class="logo-container">
-        <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+      <a href="{% url 'index' %}"> <!-- Wrap the image in an anchor tag -->
+        <img src="{% static 'Images/logo.png' %}"
+          style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+      </a>
     </div>
 
     <!-- Welcome User -->
@@ -55,41 +58,37 @@
 
       {% if user.is_authenticated %}
       <a href="/logout">
-          <span class="sidebar-link-icon">↪️</span>
-          <b>Logout</b>
+        <span class="sidebar-link-icon">↪️</span>
+        <b>Logout</b>
       </a>
       {% else %}
       <a href="/login">
-          <span class="sidebar-link-icon">↩</span>
-          <b>Login</b>
+        <span class="sidebar-link-icon">↩</span>
+        <b>Login</b>
       </a>
       {% endif %}
-  </div>
+    </div>
 
     <!-- User Sidebar -->
     <div class="sidebar-section">
       <a href="/" class="sidebar-link">
-          <span class="sidebar-link-icon">🏠</span>
-          Home
+        <span class="sidebar-link-icon">🏠</span>
+        Home
       </a>
       <a href="/search/" class="sidebar-link">
-          <span class="sidebar-link-icon">🔍</span>
-          Search
+        <span class="sidebar-link-icon">🔍</span>
+        Search
       </a>
       <a href="/user_home/" class="sidebar-link active">
-          <span class="sidebar-link-icon">🎵</span>
-          Your Library
+        <span class="sidebar-link-icon">🎵</span>
+        Your Library
       </a>
-      <a href="#" class="sidebar-link active">
-          <span class="sidebar-link-icon">💜</span>
-          <span class="sidebar-link-text">Liked Songs</span>
+      <a href="#" class="sidebar-link" id="new-playlist-link">
+        <span class="sidebar-link-icon">🎵</span>
+        Create Playlist
       </a>
-        <a href="#" class="sidebar-link" id="new-playlist-link">
-            <span class="sidebar-link-icon">🎵</span>
-            Create Playlist
-        </a>
+    </div>
   </div>
-</div>
 
   <!-- Main Content -->
   <div class="flex-1">
@@ -97,7 +96,9 @@
     <!-- Artist Header -->
     <div class="relative">
       <!-- Increased height with inline style -->
-      <img id="profile-banner" src="{% if request.user.useraccount.banner_image %} {{ request.user.useraccount.banner_image.url }} {% else %} {% static 'Images/IUprofile.jpg' %} {% endif %}" style="height: 600px; object-fit: cover; width: 100%;">
+      <img id="profile-banner"
+        src="{% if request.user.useraccount.banner_image %} {{ request.user.useraccount.banner_image.url }} {% else %} {% static 'Images/IUprofile.jpg' %} {% endif %}"
+        style="height: 600px; object-fit: cover; width: 100%;">
       <div class="absolute bottom-0 p-5 w-full" style="background: rgba(0, 0, 0, 0.5);">
         <div class="flex items-center justify-between">
           <div>
@@ -107,9 +108,11 @@
             <h1 class="text-5xl font-bold text-white mt-2">{{ user.username }}</h1>
           </div>
           <!-- Pen Icon Button -->
-          <button id="editBannerButton" class="text-gray-400 hover:text-white focus:outline-none ml-4 mt-4 flex-shrink-0">
+          <button id="editBannerButton"
+            class="text-gray-400 hover:text-white focus:outline-none ml-4 mt-4 flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              <path
+                d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
             </svg>
           </button>
           <!-- End Pen Icon Button -->
@@ -118,52 +121,54 @@
     </div>
     <!-- Playlists Section -->
     <div class="p-5">
-        <h2 class="text-2xl font-bold mb-4">Playlists</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {% for playlist in playlists %}
-                <div class="relative playlist-item">
-                    <a href="{% url 'playlist_detail' pk=playlist.pk %}"> <!-- Replace 'playlist_detail' with your playlist detail view URL name -->
-                        <img src="{% if playlist.cover_image %} {{ playlist.cover_image.url }} {% else %} {% static 'Images/IUlogo.jpg' %} {% endif %}" alt="{{ playlist.name }}" class="w-full h-48 object-cover rounded-md">
-                        <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-70 text-white p-2">
-                            <h3 class="text-sm font-semibold">{{ playlist.name }}</h3>
-                        </div>
-                    </a>
-                </div>
-            {% empty %}
-                <p>No playlists created yet.</p>
-            {% endfor %}
+      <h2 class="text-2xl font-bold mb-4">Playlists</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {% for playlist in playlists %}
+        <div class="relative playlist-item">
+          <a href="{% url 'playlist_detail' pk=playlist.pk %}">
+            <img
+              src="{% if playlist.cover_image %} {{ playlist.cover_image.url }} {% else %} {% static 'Images/IUlogo.jpg' %} {% endif %}"
+              alt="{{ playlist.name }}" class="w-full h-48 object-cover rounded-md">
+            <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-70 text-white p-2">
+              <h3 class="text-sm font-semibold">{{ playlist.name }}</h3>
+            </div>
+          </a>
         </div>
+        {% empty %}
+        <p>No playlists created yet.</p>
+        {% endfor %}
+      </div>
     </div>
   </div>
 
   <!-- New Playlist Pop-up -->
-<div id="newPlaylistPopupOverlay" class="upload-popup-overlay">
-  <div class="upload-popup">
+  <div id="newPlaylistPopupOverlay" class="upload-popup-overlay">
+    <div class="upload-popup">
       <div class="upload-popup-header">
-          <h2>Create New Playlist</h2>
-          <button id="closeNewPlaylistPopup" class="close-button">×</button>
+        <h2>Create New Playlist</h2>
+        <button id="closeNewPlaylistPopup" class="close-button">×</button>
       </div>
       <form id="newPlaylistForm" method="post" action="{% url 'user_home' %}" enctype="multipart/form-data">
-          {% csrf_token %}
-          <div class="form-group">
-              <label for="{{ playlist_form.name.id_for_label }}">Playlist Name</label>
-              {{ playlist_form.name }}
-          </div>
-          <div class="form-group">
-              <label for="{{ playlist_form.cover_image.id_for_label }}">Playlist Cover</label>
-              {{ playlist_form.cover_image }}
-              {% if playlist_form.cover_image.errors %}
-                  <ul class="errorlist">
-                      {% for error in playlist_form.cover_image.errors %}
-                          <li>{{ error }}</li>
-                      {% endfor %}
-                  </ul>
-              {% endif %}
-          </div>
-          <button type="submit" class="submit-button">Create Playlist</button>
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="{{ playlist_form.name.id_for_label }}">Playlist Name</label>
+          {{ playlist_form.name }}
+        </div>
+        <div class="form-group">
+          <label for="{{ playlist_form.cover_image.id_for_label }}">Playlist Cover</label>
+          {{ playlist_form.cover_image }}
+          {% if playlist_form.cover_image.errors %}
+          <ul class="errorlist">
+            {% for error in playlist_form.cover_image.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+        <button type="submit" class="submit-button">Create Playlist</button>
       </form>
+    </div>
   </div>
-</div>
 
   <!-- Banner Upload Pop-up -->
   <div id="bannerUploadOverlay" class="upload-popup-overlay" style="display: none;">
@@ -176,15 +181,15 @@
       <form id="bannerUploadForm" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
-            <label for="banner_image">Banner Image</label>  <!-- Corrected 'name' attribute -->
-            {{ banner_form.banner_image }}  <!-- Render the form field -->
-            {% if banner_form.banner_image.errors %}
-            <ul class="errorlist">
-                {% for error in banner_form.banner_image.errors %}
-                <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+          <label for="banner_image">Banner Image</label> <!-- Corrected 'name' attribute -->
+          {{ banner_form.banner_image }} <!-- Render the form field -->
+          {% if banner_form.banner_image.errors %}
+          <ul class="errorlist">
+            {% for error in banner_form.banner_image.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
         </div>
         <button type="submit" class="submit-button">Upload Banner</button>
       </form>
@@ -217,20 +222,21 @@
     const closeNewPlaylistPopup = document.getElementById('closeNewPlaylistPopup');
 
     newPlaylistLink.addEventListener('click', (event) => {
-        event.preventDefault();
-        newPlaylistPopupOverlay.style.display = 'flex';
+      event.preventDefault();
+      newPlaylistPopupOverlay.style.display = 'flex';
     });
 
     closeNewPlaylistPopup.addEventListener('click', () => {
-        newPlaylistPopupOverlay.style.display = 'none';
+      newPlaylistPopupOverlay.style.display = 'none';
     });
 
     window.addEventListener('click', (event) => {
-        if (event.target === newPlaylistPopupOverlay) {
-            newPlaylistPopupOverlay.style.display = 'none';
-        }
+      if (event.target === newPlaylistPopupOverlay) {
+        newPlaylistPopupOverlay.style.display = 'none';
+      }
     });
   </script>
 
 </body>
+
 </html>

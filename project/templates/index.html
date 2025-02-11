@@ -15,7 +15,9 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo-container">
-            <img src="{% static 'Images\logo.png' %}" style="width: 210px; height: 89.5px; padding: 20px; box-sizing: border-box;">
+            <a href="{% if user.is_staff %}{% url 'artist_home' %}{% else %}{% url 'index' %}{% endif %}">
+                <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            </a>
         </div>
 
         <!-- Welcome User -->
@@ -54,10 +56,6 @@
             <a href="/user_home/" class="sidebar-link">
                 <span class="sidebar-link-icon">🎵</span>
                 Your Library
-            </a>
-            <a href="#" class="sidebar-link active">
-                <span class="sidebar-link-icon">💜</span>
-                <span class="sidebar-link-text">Liked Songs</span>
             </a>
         </div>
     </div>
