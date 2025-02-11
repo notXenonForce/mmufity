@@ -60,7 +60,8 @@ class Music(models.Model):
     audio_file = models.FileField(upload_to='songs/', validators=[])
     upload_date = models.DateTimeField(auto_now_add=True)
     like_count = models.IntegerField(default=0)  # Added like_count field
-
+    music_link = models.URLField(blank=False, null=False)
+    
     def __str__(self):
         return f"{self.music_name} - {self.artist.user.username}" # We call to the username
 

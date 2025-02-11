@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Max, Min
 from django.db.models import Q
 from django.http import JsonResponse
+from django.core.files.storage import FileSystemStorage
 import traceback  # Import traceback
 
 # Helper functions for user type checks
@@ -326,19 +327,11 @@ def artist_home(request):
         banner_form = BannerUploadForm(request.POST, request.FILES, instance=request.user.artistaccount)
         if banner_form.is_valid():
             banner_image = request.FILES['banner_image']
-            # Save the image to a storage location (e.g., using Django's FileSystemStorage or a cloud storage service like AWS S3).
-            # Update the user's profile with the URL of the new banner image.
-
-            # Example (using FileSystemStorage - adapt this to your storage setup!):
-            from django.core.files.storage import FileSystemStorage
             fs = FileSystemStorage(location='media/')  # Configure MEDIA_ROOT and MEDIA_URL in settings.py
-            filename = fs.save(banner_image.name, banner_image)
-
-            # Assuming you have a UserProfile model or a way to associate the banner with the user:
+            filename = fs.save("banners/" + banner_image.name, banner_image)  # **ADD 'banners/' HERE**
             artist_account = ArtistAccount.objects.get(user=request.user) #Get the user, not username
             artist_account.banner_image = filename  # Access ArtistAccount through user
             artist_account.save()
-
             return redirect('artist_home')  # Redirect back to the profile page
         else: #added validation error rendering
             messages.error(request, "There are problems with your submission")
@@ -419,13 +412,16 @@ def artist_home(request):
 @login_required
 def artist_detail(request, pk):
     artist = get_object_or_404(ArtistAccount, pk=pk)
-    tracks = artist.music_set.all()
+
+    #Order by like_count descending (most likes first), then by music_name
+    tracks = artist.music_set.all().order_by('-like_count', 'music_name')
 
     if request.user.is_authenticated:
         liked_track_ids = Like.objects.filter(user=request.user, music__in=tracks).values_list('music_id', flat=True)
     else:
         liked_track_ids = []
 
+    # Update is_liked status more efficiently
     for track in tracks:
         track.is_liked = track.id in liked_track_ids
 
@@ -435,7 +431,7 @@ def artist_detail(request, pk):
 @login_required  # Ensure only logged-in users can view
 def album_detail(request, pk):
     album = get_object_or_404(Album, pk=pk)
-    tracks = album.music_set.all()
+    tracks = album.music_set.all().order_by('-like_count', 'music_name')
 
     if request.user.is_authenticated:
         liked_track_ids = Like.objects.filter(user=request.user, music__in=tracks).values_list('music_id', flat=True)
@@ -446,14 +442,28 @@ def album_detail(request, pk):
         track.is_liked = track.id in liked_track_ids
 
     context = {'album': album, 'tracks': tracks}  # Pass tracks to template
-
     return render(request, 'album_detail.html', context)
 
 @login_required
 def playlist_detail(request, pk):
-    playlist = get_object_or_404(Playlist, pk=pk)
+    playlist = get_object_or_404(Playlist, pk=pk, user=request.user.useraccount) #Add this to protect unauthorized user
+    tracks = playlist.music_set.all() #All the tracks
+
+    # Get IDs of tracks the current user has liked
+    if request.user.is_authenticated:
+        liked_track_ids = Like.objects.filter(user=request.user, music__in=tracks).values_list('music_id', flat=True)
+    else:
+        liked_track_ids = []
+
+    #Set is_liked for each object
+    for track in tracks:
+        track.is_liked = track.id in liked_track_ids
+        #This is a patch
+        track.music_link = track.music_link if track.music_link else ""
+    #This is for available music for a song
     available_music = Music.objects.all()
-    return render(request, 'playlist_detail.html', {'playlist': playlist, 'available_music': available_music})
+
+    return render(request, 'playlist_detail.html', {'playlist': playlist, 'available_music': available_music, 'tracks': tracks})
 
 @login_required
 def search_music_for_playlist(request):
@@ -500,38 +510,39 @@ def edit_song(request, track_id):
 
     return render(request, 'edit_song.html', {'form': form, 'track': track})
 
-@login_required
 def toggle_like(request):
-    if request.method == 'POST':
-        track_id = request.POST.get('track_id')
-        try:
-            track = get_object_or_404(Music, pk=track_id)
-            user = request.user
+            if request.method == 'POST':
+              track_id = request.POST.get('track_id')
+              try:
+                  track = get_object_or_404(Music, pk=track_id)
+                  user = request.user
 
-            like, created = Like.objects.get_or_create(user=user, music=track)
+                  like, created = Like.objects.get_or_create(user=user, music=track)
 
-            if not created:
-                # Like already exists, so unlike it (delete the like)
-                like.delete()
-                track.like_count = max(0, track.like_count - 1)
-                is_liked = False  # Correct is_liked value!
+                  if not created:
+                      # Like already exists, so unlike it (delete the like)
+                      like.delete()
+                      track.like_count = max(0, track.like_count - 1)
+                      is_liked = False  # Correct is_liked value!
+                  else:
+                      # Like was created, so increment like count
+                      track.like_count += 1
+                      is_liked = True  # Correct is_liked value!
+
+                  track.save()  # SAVE THE TRACK AFTER MODIFYING like_count
+                  #We need to load this information
+                  track_info = {
+                      'status': 'success',
+                      'like_count': track.like_count,
+                      'is_liked': is_liked,
+                      }
+                  #Return success
+                  return JsonResponse(track_info)
+
+              except Music.DoesNotExist:
+                  return JsonResponse({'status': 'error', 'message': 'Track not found'})
+              except Exception as e:
+                  traceback.print_exc()  # Print the full traceback to the console
+                  return JsonResponse({'status': 'error', 'message': str(e)})
             else:
-                # Like was created, so increment like count
-                track.like_count += 1
-                is_liked = True  # Correct is_liked value!
-
-            track.save()  # SAVE THE TRACK AFTER MODIFYING like_count
-
-            return JsonResponse({
-                'status': 'success',
-                'like_count': track.like_count,
-                'is_liked': is_liked,
-            })
-
-        except Music.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Track not found'})
-        except Exception as e:
-            traceback.print_exc()  # Print the full traceback to the console
-            return JsonResponse({'status': 'error', 'message': str(e)})
-
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+                return JsonResponse({'status': 'error', 'message': 'Invalid request'})

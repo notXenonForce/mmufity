@@ -215,61 +215,73 @@
 
     </script>
 
-    <!-- Upload Song Pop-up -->
-  <div id="uploadPopupOverlay" class="upload-popup-overlay">
-    <div class="upload-popup">
-      <div class="upload-popup-header">
-        <h2>Upload Song</h2>
-        <button id="closePopup" class="close-button">×</button>
-      </div>
-      <form id="uploadForm" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input type="text" id="title" name="music_name" required value="{{ form.music_name.value|default:'' }}">
-          {% if form.music_name.errors %}
-          <ul class="errorlist">
-            {% for error in form.music_name.errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-        </div>
-        <div class="form-group">
-          <label for="music_date">Music date</label>
-          <input type="date" id="music_date" name="music_date" required value="{{ form.music_date.value|default:'' }}">
-        </div>
-        <div class="form-group">
-          <label for="album">Album</label>
-          <select id="album" name="album">
-            <option value="" disabled {% if not form.album.value %}selected{% endif %}>Select an album</option>
-            {% for album in albums %}
-            <option value="{{ album.id }}" {% if form.album.value == album.id|stringformat:'s' %}selected{% endif %}>{{ album.name }}</option>
-            {% endfor %}
-          </select>
-          {% if form.album.errors %}
-          <ul class="errorlist">
-            {% for error in form.album.errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-        </div>
-        <div class="form-group">
-          <label for="audioFile">Audio File</label>
-          <input type="file" id="audioFile" name="audio_file" accept=".mp3" required>
-          {% if form.audio_file.errors %}
-          <ul class="errorlist">
-            {% for error in form.audio_file.errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-        </div>
-        <button type="submit" class="submit-button">Upload</button>
-      </form>
+  <!-- Upload Song Pop-up -->
+<div id="uploadPopupOverlay" class="upload-popup-overlay">
+  <div class="upload-popup">
+    <div class="upload-popup-header">
+      <h2>Upload Song</h2>
+      <button id="closePopup" class="close-button">×</button>
     </div>
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="music_name" required value="{{ form.music_name.value|default:'' }}">
+        {% if form.music_name.errors %}
+        <ul class="errorlist">
+          {% for error in form.music_name.errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label for="music_date">Music date</label>
+        <input type="date" id="music_date" name="music_date" required value="{{ form.music_date.value|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label for="album">Album</label>
+        <select id="album" name="album">
+          <option value="" disabled {% if not form.album.value %}selected{% endif %}>Select an album</option>
+          {% for album in albums %}
+          <option value="{{ album.id }}" {% if form.album.value == album.id|stringformat:'s' %}selected{% endif %}>{{ album.name }}</option>
+          {% endfor %}
+        </select>
+        {% if form.album.errors %}
+        <ul class="errorlist">
+          {% for error in form.album.errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      <div class="form-group">
+        <label for="{{ form.music_link.id_for_label }}">Music Link</label>
+        {{ form.music_link }}
+        {% if form.music_link.errors %}
+        <ul class="errorlist">
+          {% for error in form.music_link.errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label for="audioFile">Audio File</label>
+        <input type="file" id="audioFile" name="audio_file" accept=".mp3" required>
+        {% if form.audio_file.errors %}
+        <ul class="errorlist">
+          {% for error in form.audio_file.errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      <button type="submit" class="submit-button">Upload</button>
+    </form>
   </div>
+</div>
 
   <!-- Banner Upload Pop-up -->
   <div id="bannerUploadOverlay" class="upload-popup-overlay" style="display: none;">

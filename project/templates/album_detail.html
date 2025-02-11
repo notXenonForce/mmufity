@@ -2,20 +2,25 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ album.name }} - Album Details</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Style for the header banner area */
         .album-header {
             height: 600px;
             width: 100%;
-            object-fit: cover; /* Ensure image covers the area without distortion */
-            object-position: center 25%; /* Center the image */
+            object-fit: cover;
+            /* Ensure image covers the area without distortion */
+            object-position: center 25%;
+            /* Center the image */
         }
 
         .banner-container {
@@ -28,19 +33,33 @@
             left: 0;
             width: 100%;
             padding: 1rem;
-            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            background: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent background */
             color: white;
         }
+
         .track-row {
-            display: block; /* Make the whole row clickable */
-            text-decoration: none; /* Remove underline from the link */
-            color: inherit; /* Inherit the text color from parent */
-            transition: background-color 0.2s ease; /* Smooth background color transition */
-            padding: 0.75rem 0; /* Add padding to the row */
+            display: flex;
+            /* Changed to flex to align items properly */
+            justify-content: space-between;
+            /* Distribute space between elements */
+            align-items: center;
+            /* Vertically align items */
+            text-decoration: none;
+            /* Remove underline from the link */
+            color: inherit;
+            /* Inherit the text color from parent */
+            transition: background-color 0.2s ease;
+            /* Smooth background color transition */
+            padding: 1rem 0;
+            /* Add padding to the row */
+            cursor: pointer;
+            /* Show pointer cursor on hover */
         }
 
         .track-row:hover {
-            background-color: rgba(255, 255, 255, 0.2); /* Lighten the background on hover */
+            background-color: rgba(255, 255, 255, 0.2);
+            /* Lighten the background on hover */
         }
 
         /* Style for the liked heart */
@@ -55,17 +74,60 @@
         }
 
         .like-count {
-            margin-left: 0.5em; /* Space between the heart icon and the count */
+            margin-left: 0.5em;
+            /* Space between the heart icon and the count */
+        }
+
+        .share-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .share-button {
+            background: none;
+            /* Remove background */
+            border: none;
+            /* Remove border */
+            color: #1DB954;
+            /* Spotify Green - adjust to your preference */
+            cursor: pointer;
+            font-size: 1.2em;
+            /* Adjust icon size */
+            padding: 0;
+            /* Remove padding */
+            margin-left: 10px;
+            margin-right: 15px;
+        }
+
+        .share-button:hover {
+            color: #14833d;
+            /* Darker Green on Hover */
+        }
+
+        .track-info {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+            margin-left: 10px;
+            flex-grow: 1;
+            /* Allow track info to take up remaining space */
+        }
+
+        .track-info>* {
+            margin-right: 10px;
+            /* Space between elements within track-info */
         }
     </style>
 </head>
+
 <body class="bg-black text-white flex">
 
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Spotify Logo -->
         <div class="logo-container">
-            <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+            <img src="{% static 'Images/logo.png' %}"
+                style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
         </div>
 
         <!-- Welcome User -->
@@ -85,8 +147,8 @@
             </a>
             {% else %}
             <a href="/login">
-              <span class="sidebar-link-icon">↩</span>
-              <b>Login</b>
+                <span class="sidebar-link-icon">↩</span>
+                <b>Login</b>
             </a>
             {% endif %}
         </div>
@@ -116,7 +178,9 @@
     <div class="flex-1">
         <!-- Album Header -->
         <div class="banner-container relative">
-            <img class="album-header" src="{% if album.cover_image %} {{ album.cover_image.url }} {% else %} {% static 'Images/IUlogo.jpg' %} {% endif %}" alt="{{ album.name }} Cover">
+            <img class="album-header"
+                src="{% if album.cover_image %} {{ album.cover_image.url }} {% else %} {% static 'Images/IUlogo.jpg' %} {% endif %}"
+                alt="{{ album.name }} Cover">
             <div class="banner-overlay">
                 <h1 class="text-5xl font-bold text-white mt-2">{{ album.name }}</h1>
                 <p class="text-lg text-gray-300">Album by {{ album.artists.user.username }}</p>
@@ -128,33 +192,99 @@
             <h2 class="text-2xl font-bold mb-4">Tracks</h2>
             <div class="divide-y divide-gray-800">
                 {% for track in tracks %}
-                    <a href="{% url 'album' %}?album_id={{ album.id }}" class="track-row">
-                        <div class="flex justify-between items-center py-3" style="margin-left: 15px;">
-                            <div class="flex items-center space-x-4">
-                                <div>
-                                    <p class="text-base font-medium">{{ track.music_name }}</p>
-                                    <p class="text-xs text-gray-400">{{ track.artist.user.username }}</p>
-                                </div>
-                            </div>
-                            <div class="like-container">
-                                <i class="fa-regular fa-heart like-button {% if track.is_liked %}liked{% endif %}" data-track-id="{{ track.id }}"></i>
-                                <span class="like-count" data-track-id="{{ track.id }}">{{ track.like_count }}</span>
-                            </div>
+                <div class="track-row" onclick="window.location.href='{% url 'album' %}?album_id={{ album.id }}'">
+                    <div class="track-info">
+                        {% if track.album and track.album.cover_image %}
+                        <img src="{{ track.album.cover_image.url }}" alt="Album Cover" class="w-12 h-12 object-cover">
+                        {% else %}
+                        <img src="{% static 'Images/IUlogo.jpg' %}" alt="Default Song Image" class="w-12 h-12">
+                        {% endif %}
+                        <div>
+                            <p class="text-base font-medium">{{ track.music_name }}</p>
+                            <p class="text-xs text-gray-400">{{ track.album.name }}</p>
                         </div>
-                    </a>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="like-container">
+                            <i class="fa-regular fa-heart like-button {% if track.is_liked %}liked{% endif %}"
+                                data-track-id="{{ track.id }}" onclick="event.stopPropagation()"></i>
+                            <span class="like-count" data-track-id="{{ track.id }}">{{ track.like_count }}</span>
+                        </div>
+                        <div class="share-container">
+                            <button class="share-button"
+                                onclick="event.stopPropagation(); shareTrack('{{ track.music_link }}')">
+                                <i class="fas fa-share-alt"></i> <!-- Share Icon -->
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 {% empty %}
-                    <p>No songs in this album yet.</p>
+                <p>No songs uploaded yet.</p>
                 {% endfor %}
             </div>
         </div>
         {% csrf_token %}
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // JavaScript functions (getCookie, shareTrack, and AJAX like toggle)
+        // can be placed here or linked from an external file
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Function that shares track using Navigator API
+        function shareTrack(trackUrl) {
+            if (trackUrl) { // Check if trackUrl exists before attempting to share
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Check out this song!',
+                        url: trackUrl
+                    }).then(() => {
+                        console.log('Successful share');
+                    }).catch((error) => {
+                        console.error('Error sharing', error);
+                        // Fallback to manual copy to clipboard
+                        copyToClipboard(trackUrl);
+                        alert('Failed to use native share. Copied link to clipboard.');
+                    });
+                } else {
+                    // Fallback for browsers that don't support the Web Share API
+                    copyToClipboard(trackUrl);
+                    alert('Web Share API not supported. Copied link to clipboard.');
+                }
+            } else {
+                alert('No share link available for this track.');
+            }
+        }
+
+        // Copy function when API unavailable
+        function copyToClipboard(text) {
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+        }
+        //Implement the heart beat here
+        document.addEventListener('DOMContentLoaded', function () {
             const likeButtons = document.querySelectorAll('.like-button');
 
             likeButtons.forEach(button => {
-                button.addEventListener('click', function(event) {
+                button.addEventListener('click', function (event) {
                     event.preventDefault();
                     const trackId = this.dataset.trackId;
                     const isLiked = this.classList.contains('liked');
@@ -180,52 +310,34 @@
                         },
                         body: `track_id=${trackId}&liked=${!isLiked}`
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            console.log('Like toggled successfully on server.');
-                            likeCountSpan.textContent = data.like_count;  // Update from server's response
-                        } else {
-                            console.error('Error toggling like on server:', data.message);
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                console.log('Like toggled successfully on server.');
+                                likeCountSpan.textContent = data.like_count;  // Update from server's response
+                            } else {
+                                console.error('Error toggling like on server:', data.message);
+                                // Optionally revert the local changes if the server fails.
+                                if (isLiked) {
+                                    this.classList.add('liked'); //revert the local likes
+                                } else {
+                                    this.classList.remove('liked');
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error sending AJAX request:', error);
                             // Optionally revert the local changes if the server fails.
                             if (isLiked) {
                                 this.classList.add('liked'); //revert the local likes
                             } else {
                                 this.classList.remove('liked');
                             }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error sending AJAX request:', error);
-                        // Optionally revert the local changes if the server fails.
-                        if (isLiked) {
-                            this.classList.add('liked'); //revert the local likes
-                        } else {
-                            this.classList.remove('liked');
-                        }
-                    });
-
+                        });
                 });
             });
-
-            // Function to get CSRF token from cookies
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
         });
     </script>
 </body>
+
 </html>

@@ -9,51 +9,133 @@
   <title>{{ playlist.name }} - Playlist Details</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    .artist-header {
-      background-image: url('Images/IUlogo.jpg');
-      background-size: cover;
-      background-position: center;
-      height: 60vh;
+    /* Style for the header banner area */
+    .album-header {
+      height: 400px;
+      /* Keep album header smaller here */
+      width: 100%;
+      object-fit: cover;
+      object-position: center 25%;
+    }
+
+    .banner-container {
+      position: relative;
+    }
+
+    .banner-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.5);
+      /* Semi-transparent background */
+      color: white;
+    }
+
+    .track-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+      transition: background-color 0.2s ease;
+      padding: 1rem 0;
+      cursor: pointer;
+      margin-left: 15px;
+    }
+
+    .track-row:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Style for the liked heart */
+    .liked {
+      color: red;
+    }
+
+    .like-container {
+      display: flex;
+      align-items: center;
+      margin-right: 15px;
+    }
+
+    .like-count {
+      margin-left: 0.5em;
+    }
+
+    .share-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .share-button {
+      background: none;
+      border: none;
+      color: #1DB954;
+      cursor: pointer;
+      font-size: 1.2em;
+      padding: 0;
+      margin-left: 10px;
+      margin-right: 15px;
+    }
+
+    .share-button:hover {
+      color: #14833d;
+    }
+
+    .track-info {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+      margin-left: 10px;
+      flex-grow: 1;
+    }
+
+    .track-info>* {
+      margin-right: 10px;
     }
 
     /* Style to show which item is being selected for upload to the music */
     .search-result-item.selected {
       background-color: #4CAF50;
-      /* Green background */
       color: white;
     }
 
     /* Style to show a better look and feel */
     .search-result-item {
       padding: 8px 12px;
-      /* Some padding to make them bigger */
       margin: 4px 0;
-      /* Some spacing between items */
       cursor: pointer;
-      /* Change cursor to a pointer on hover */
       border-radius: 4px;
-      /* Optional: Rounded corners */
       transition: background-color 0.2s;
-      /* Smooth background color transition */
     }
 
     .search-result-item:hover {
       background-color: #298df0;
-      /* Lighter gray on hover */
     }
 
+    /* Ensure styles cascade correctly for the A tag*/
+    /* Ensure styles cascade correctly for the A tag*/
     .track-row {
-      display: block;
+      display: flex;
+      /*  display flex for correct item display*/
+      justify-content: space-between;
+      align-items: center;
       text-decoration: none;
       color: inherit;
       transition: background-color 0.2s ease;
-      padding: 0.75rem 0;
+      padding: 1rem 0;
+      cursor: pointer;
+      margin-left: 15px;
     }
 
     .track-row:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      /* Lighten the background on hover */
+      background-color: rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>
@@ -119,11 +201,11 @@
   <!-- Main Content -->
   <div class="flex-1">
     <!-- Playlist Header -->
-    <div class="relative">
-      <img
+    <div class="banner-container relative">
+      <img class="album-header"
         src="{% if playlist.cover_image %} {{ playlist.cover_image.url }} {% else %} {% static 'Images/IUlogo.jpg' %} {% endif %}"
-        alt="{{ playlist.name }} Cover" style="height: 400px; object-fit: cover; width: 100%;">
-      <div class="absolute bottom-0 p-5 w-full" style="background: rgba(0, 0, 0, 0.5);">
+        alt="{{ playlist.name }} Cover">
+      <div class="banner-overlay">
         <h1 class="text-5xl font-bold text-white mt-2">{{ playlist.name }}</h1>
       </div>
     </div>
@@ -133,44 +215,54 @@
       <h2 class="text-2xl font-bold mb-4">Tracks</h2>
       <div class="divide-y divide-gray-800" id="playlist-tracks">
         {% for track in playlist.music_set.all %}
-          <a href="{% url 'playlist' %}?playlist_id={{ playlist.id }}" class="flex justify-between items-center py-3 track-row">
-            <div class="flex justify-between items-center py-3">
-              <div class="flex items-center space-x-4">
-                {% if track.album and track.album.cover_image %}
-                  <img src="{{ track.album.cover_image.url }}" alt="Album Cover" class="w-12 h-12 object-cover">
-                {% else %}
-                  <img src="{% static 'Images/IUlogo.jpg' %}" alt="Default Song Image" class="w-12 h-12">
-                {% endif %}
-                <div>
-                  <p class="text-base font-medium">{{ track.music_name }}</p>
-                  <p class="text-xs text-gray-400">{{ track.album.name }}</p>
-                </div>
-              </div>
+        <div class="track-row">
+          <div class="track-info">
+            {% if track.album and track.album.cover_image %}
+            <img src="{{ track.album.cover_image.url }}" alt="Album Cover" class="w-12 h-12 object-cover">
+            {% else %}
+            <img src="{% static 'Images/IUlogo.jpg' %}" alt="Default Song Image" class="w-12 h-12">
+            {% endif %}
+            <div>
+              <p class="text-base font-medium">{{ track.music_name }}</p>
+              <p class="text-xs text-gray-400">{{ track.album.name }}</p>
             </div>
-          </a>
+          </div>
+          <div class="flex items-center">
+            <div class="like-container">
+              <i class="fa-regular fa-heart like-button {% if track.is_liked %}liked{% endif %}"
+                data-track-id="{{ track.id }}" ></i>
+              <span class="like-count" data-track-id="{{ track.id }}">{{ track.like_count }}</span>
+            </div>
+            <div class="share-container">
+              <button class="share-button" onclick="event.stopPropagation(); shareTrack('{{ track.music_link }}')">
+                <i class="fas fa-share-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
         {% empty %}
-          <p>No songs in this playlist yet.</p>
+        <p>No songs in this playlist yet.</p>
         {% endfor %}
       </div>
 
-    <!-- Search Music Popup Overlay -->
-    <div id="musicUploadOverlay" class="upload-popup-overlay" style="display: none;">
-      <div class="upload-popup">
-        <div class="upload-popup-header">
-          <h2>Search Music to Add</h2>
-          <button id="closeUploadPopup" class="close-button">×</button>
+      <!-- Search Music Popup Overlay -->
+      <div id="musicUploadOverlay" class="upload-popup-overlay" style="display: none;">
+        <div class="upload-popup">
+          <div class="upload-popup-header">
+            <h2>Search Music to Add</h2>
+            <button id="closeUploadPopup" class="close-button">×</button>
+          </div>
+          <div class="form-group">
+            <label for="music-search-input">Search Music:</label>
+            <input type="text" id="music-search-input" class="form-control">
+          </div>
+          <ul id="search-results"></ul>
+          <button id="addAllSelectedSongs" type="button"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Add
+            Selected Songs</button>
         </div>
-        <div class="form-group">
-          <label for="music-search-input">Search Music:</label>
-          <input type="text" id="music-search-input" class="form-control">
-        </div>
-        <ul id="search-results"></ul>
-        <button id="addAllSelectedSongs" type="button"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Add
-          Selected Songs</button>
       </div>
     </div>
-  </div>
   </div>
   <script>
     const musicUploadOverlay = document.getElementById('musicUploadOverlay');
@@ -184,16 +276,16 @@
     });
 
     closeUploadPopup.addEventListener('click', (event) => {
-      event.stopPropagation();  // Prevents any other event from being triggered
+      event.stopPropagation(); // Prevents any other event from being triggered
       musicUploadOverlay.style.display = 'none';
     });
 
 
     window.addEventListener('click', (event) => {
-            if (event.target === musicUploadOverlay) {
-                musicUploadOverlay.style.display = 'none';
-            }
-        });
+      if (event.target === musicUploadOverlay) {
+        musicUploadOverlay.style.display = 'none';
+      }
+    });
 
     // Get elements
     const searchInput = document.getElementById('music-search-input');
@@ -202,16 +294,16 @@
     searchInput.addEventListener('input', function () {
       const term = this.value;
 
-      if (term.length >= 2) {  // Only search if term has at least 2 characters
-        fetch(`/search_music/?term=${term}`)  // Replace with your URL
+      if (term.length >= 2) { // Only search if term has at least 2 characters
+        fetch(`/search_music/?term=${term}`) // Replace with your URL
           .then(response => response.json())
           .then(data => {
             resultsContainer.innerHTML = ''; // Clear previous results
             data.forEach(item => {
               const listItem = document.createElement('li');
               listItem.textContent = `${item.name} by ${item.artist}`;
-              listItem.className = 'search-result-item';  // Add class for styling
-              listItem.setAttribute('data-music-id', item.id);  // Store music ID
+              listItem.className = 'search-result-item'; // Add class for styling
+              listItem.setAttribute('data-music-id', item.id); // Store music ID
               listItem.addEventListener('click', (event) => {
                 event.stopPropagation(); // Prevent the playlist page from reloading
                 //addMusicToPlaylist(item.id);  // Add music on click, remove it to make selections
@@ -244,14 +336,14 @@
     );
 
     function addMusicToPlaylist(musicId) {
-      const playlistId = "{{ playlist.id }}";  // Get the playlist ID from the template context
-      fetch(`/playlist/${playlistId}/add_music/`, {  // Replace with your URL
+      const playlistId = "{{ playlist.id }}"; // Get the playlist ID from the template context
+      fetch(`/playlist/${playlistId}/add_music/`, { // Replace with your URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'X-CSRFToken': getCookie('csrftoken')  // Get CSRF token (see helper function below)
+          'X-CSRFToken': getCookie('csrftoken') // Get CSRF token (see helper function below)
         },
-        body: `music_id=${musicId}`  // Post the music ID
+        body: `music_id=${musicId}` // Post the music ID
       })
         .then(response => {
           if (response.ok) {
@@ -259,7 +351,7 @@
             console.log("Music added successfully");
             //searchMusicOverlay.style.display = 'none';
             // Update playlist display
-            return response.json();  // Parse the JSON from the response
+            return response.json(); // Parse the JSON from the response
           } else {
             // Handle error
             console.error("Error adding music");
@@ -267,36 +359,154 @@
         })
         .then(data => {
           // Handle success (e.g., close the popup, display a message, update the playlist)
-            if (data) {  // Check if data exists before trying to use it
-              console.log("Music added successfully");
-              musicUploadOverlay.style.display = 'none'; // Hide the popup
+          if (data) { // Check if data exists before trying to use it
+            console.log("Music added successfully");
+            musicUploadOverlay.style.display = 'none'; // Hide the popup
+            //Code that appends it here
 
-              // Create the new playlist item HTML
-              let newTrackHTML = `
-                <a href="{% url 'playlist' %}?playlist_id={{ playlist.id }}" class="flex justify-between items-center py-3 track-row">
-                  <div class="flex justify-between items-center py-3">
-                    <div class="flex items-center space-x-4">
-                      <img src="${data.cover_image_url}" alt="Album Cover" class="w-12 h-12 object-cover">
-                      <div>
-                        <p class="text-base font-medium">${data.music_name}</p>
-                        <p class="text-xs text-gray-400">${data.album_name}</p>
-                      </div>
-                    </div>
-                  </div>
-                </a>
+            // Create the new playlist item HTML
+            let newTrackHTML = `
+        <div class="track-row" onclick="window.location.href='{% url 'tracks' %}?track_id=\${data.id}'">
+          <div class="track-info">
+            <img src="\${data.cover_image_url}" alt="Album Cover" class="w-12 h-12 object-cover">
+            <div>
+              <p class="text-base font-medium">\${data.music_name}</p>
+              <p class="text-xs text-gray-400">\${data.album_name}</p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="like-container">
+              <i class="fa-regular fa-heart like-button" data-track-id="\${data.id}" onclick="event.stopPropagation()"></i>
+              <span class="like-count" data-track-id="\${data.id}">0</span>
+            </div>
+            <div class="share-container">
+              <button class="share-button" onclick="event.stopPropagation(); shareTrack('\${data.music_link}')">
+                <i class="fas fa-share-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
               `;
-
-              // Append the new HTML to the playlist
-              playlistTracksContainer.innerHTML += newTrackHTML;
-            } else {
-                console.warn("Data is undefined.  Cannot update playlist display.");
-            }
+            playlistTracksContainer.innerHTML += newTrackHTML;
+          } else {
+            console.warn("Data is undefined.  Cannot update playlist display.");
+          }
         })
         .catch(error => {
-            console.error("There was an error adding the music:", error);
+          console.error("There was an error adding the music:", error);
         });
     }
 
+    // Function that shares track using Navigator API
+    function shareTrack(trackUrl) {
+      if (trackUrl) { // Check if trackUrl exists before attempting to share
+        if (navigator.share) {
+          navigator.share({
+            title: 'Check out this song!',
+            url: trackUrl
+          }).then(() => {
+            console.log('Successful share');
+          }).catch((error) => {
+            console.error('Error sharing', error);
+            // Fallback to manual copy to clipboard
+            copyToClipboard(trackUrl);
+            alert('Failed to use native share. Copied link to clipboard.');
+          });
+        } else {
+          // Fallback for browsers that don't support the Web Share API
+          copyToClipboard(trackUrl);
+          alert('Web Share API not supported. Copied link to clipboard.');
+        }
+      } else {
+        alert('No share link available for this track.');
+      }
+    }
+
+    // Copy function when API unavailable
+    function copyToClipboard(text) {
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = text;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
+    }
+    //Implement the heart beat here
+    document.addEventListener('DOMContentLoaded', function () {
+      const likeButtons = document.querySelectorAll('.like-button');
+
+      likeButtons.forEach(button => {
+        // Initialize liked state on page load
+        const trackId = button.dataset.trackId;
+        const isLiked = button.classList.contains('liked');
+        //Check initial Load
+        if (isLiked) {
+          console.log("It has already been lit");
+        }
+        else {
+          console.log("It has not been lit")
+        }
+
+        // Attach event listener
+        button.addEventListener('click', function (event) {
+          event.preventDefault();
+          const trackId = this.dataset.trackId;
+          const isLiked = this.classList.contains('liked');
+          const likeCountSpan = document.querySelector(`.like-count[data-track-id="${trackId}"]`);
+
+          if (!likeCountSpan) {
+            console.error("Like count span not found for track ID:", trackId);
+            return;
+          }
+
+          // Send AJAX request to toggle like
+          fetch('/toggle_like/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: `track_id=${trackId}&liked=\${!isLiked}`
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status === 'success') {
+                console.log('Like toggled successfully on server.');
+                likeCountSpan.textContent = data.like_count; // Update from server's response
+                //Update the HTML with Javascript
+                if (data.is_liked) {
+                  this.classList.add('liked'); //revert the local likes
+                  console.log("It has now been lit");
+                } else {
+                  this.classList.remove('liked');
+                  console.log("It has now been unlit");
+                }
+
+              } else {
+                console.error('Error toggling like on server:', data.message);
+                console.log("Javascript will do revert code");
+                //Optionally revert the local changes if the server fails.
+                if (isLiked) {
+                  this.classList.add('liked'); //revert the local likes
+                } else {
+                  this.classList.remove('liked');
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Error sending AJAX request:', error);
+              // Optionally revert the local changes if the server fails.
+              if (isLiked) {
+                this.classList.add('liked'); //revert the local likes
+              } else {
+                this.classList.remove('liked');
+              }
+            });
+
+        });
+      });
+    });
 
     // Helper function to get the CSRF token from the cookies
     function getCookie(name) {
@@ -315,4 +525,5 @@
     }
   </script>
 </body>
+
 </html>

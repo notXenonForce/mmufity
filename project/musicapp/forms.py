@@ -2,9 +2,14 @@ from django import forms
 from .models import Music, Album, ArtistAccount, Playlist, UserAccount  # Import your Music and Album models
 
 class UploadSongForm(forms.ModelForm):
+    music_link = forms.URLField(
+        label="Music Link",
+        required=True,  # Make it optional if you want
+        widget=forms.TextInput(attrs={'placeholder': 'Enter music link'})  # Optional: add a placeholder
+    )
     class Meta:
         model = Music
-        fields = ['music_name', 'music_date', 'album', 'audio_file']
+        fields = ['music_name', 'music_date', 'album', 'audio_file', 'music_link']
         widgets = {
             'music_date': forms.DateInput(attrs={'type': 'date'}),  # Use a date picker
         }
