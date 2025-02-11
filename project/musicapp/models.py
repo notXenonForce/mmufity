@@ -59,6 +59,7 @@ class Music(models.Model):
     music_date = models.DateField()
     audio_file = models.FileField(upload_to='songs/', validators=[])
     upload_date = models.DateTimeField(auto_now_add=True)
+    like_count = models.IntegerField(default=0)  # Added like_count field
 
     def __str__(self):
         return f"{self.music_name} - {self.artist.user.username}" # We call to the username
@@ -73,3 +74,14 @@ class Playlist(models.Model):
     music_set = models.ManyToManyField(Music)
     def __str__(self):
         return self.name
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    music = models.ForeignKey('Music', on_delete=models.CASCADE)  # Reference the Music model
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'music')  # Prevent a user from liking the same song multiple times
+
+    def __str__(self):
+        return f"{self.user.username} likes {self.music.music_name}"

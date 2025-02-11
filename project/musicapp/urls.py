@@ -22,4 +22,5 @@ urlpatterns = [
     path('edit_song/<int:track_id>/', views.edit_song, name='edit_song'),
     path('search_music/', views.search_music_for_playlist, name='search_music_for_playlist'),
     path('playlist/<int:pk>/add_music/', views.add_music_to_playlist, name='add_music_to_playlist'),
+    path('toggle_like/', views.toggle_like, name='toggle_like'),  # ADD THIS LINE
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,6 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
   <style>
-
     .artist-header {
       background-image: url('Images/IUlogo.jpg');
       background-size: cover;
@@ -17,15 +17,37 @@
       height: 60vh;
     }
 
+    .track-row {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: background-color 0.2s ease;
+      padding: 0.75rem 0;
+    }
+
+    .track-row:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .album-item {
+      position: relative;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .album-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
   </style>
 </head>
+
 <body class="bg-black text-white flex">
 
   <!-- Sidebar -->
   <div class="sidebar">
     <!-- Spotify Logo -->
     <div class="logo-container">
-        <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
+      <img src="{% static 'Images/logo.png' %}"
+        style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
     </div>
 
     <!-- Welcome User -->
@@ -40,33 +62,33 @@
 
       {% if user.is_authenticated %}
       <a href="/logout">
-          <span class="sidebar-link-icon">↪️</span>
-          <b>Logout</b>
+        <span class="sidebar-link-icon">↪️</span>
+        <b>Logout</b>
       </a>
       {% else %}
       <a href="/login">
-          <span class="sidebar-link-icon">↩</span>
-          <b>Login</b>
+        <span class="sidebar-link-icon">↩</span>
+        <b>Login</b>
       </a>
       {% endif %}
-  </div>
+    </div>
 
     <!-- Artist Sidebar -->
     <div class="sidebar-section">
-        <a href="{% url 'artist_home' %}" class="sidebar-link active">
-            <span class="sidebar-link-icon">🏠</span>
-            Home
-        </a>
-        <a href="#" class="sidebar-link" id="upload-link">
-          <span class="sidebar-link-icon">🔍</span>
-          Upload Songs
+      <a href="{% url 'artist_home' %}" class="sidebar-link active">
+        <span class="sidebar-link-icon">🏠</span>
+        Home
       </a>
-        <a href="#" class="sidebar-link" id="new-album-link">
-            <span class="sidebar-link-icon">🎵</span>
-            Create Album
-        </a>
+      <a href="#" class="sidebar-link" id="upload-link">
+        <span class="sidebar-link-icon">🔍</span>
+        Upload Songs
+      </a>
+      <a href="#" class="sidebar-link" id="new-album-link">
+        <span class="sidebar-link-icon">🎵</span>
+        Create Album
+      </a>
     </div>
-</div>
+  </div>
 
   <!-- Main Content -->
   <div class="flex-1">
@@ -74,124 +96,126 @@
     <!-- Artist Header -->
     <div class="relative">
       <!-- Increased height with inline style -->
-      <img id="profile-banner" src="{% if request.user.artistaccount.banner_image %} {{ request.user.artistaccount.banner_image.url }} {% else %} {% static 'Images/IUprofile.jpg' %} {% endif %}" style="height: 600px; object-fit: cover; width: 100%;">
+      <img id="profile-banner"
+        src="{% if request.user.artistaccount.banner_image %} {{ request.user.artistaccount.banner_image.url }} {% else %} {% static 'Images/IUprofile.jpg' %} {% endif %}"
+        style="height: 600px; object-fit: cover; width: 100%;">
       <div class="absolute bottom-0 p-5 w-full" style="background: rgba(0, 0, 0, 0.5);">
         <div class="flex items-center justify-between">
           <div>
             <div class="flex items-center"> <!-- Added a flex container for the badge -->
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 18.1c-3.374 0-6.1-2.726-6.1-6.1 0-3.374 2.726-6.1 6.1-6.1 3.374 0 6.1 2.726 6.1 6.1 0 3.374-2.726 6.1-6.1 6.1zm3.95-8.95l-4.4 4.4-2.1-2.1-1.45 1.45 3.55 3.55 5.85-5.85-1.45-1.45z"/>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" viewBox="0 0 24 24"
+                fill="currentColor">
+                <path
+                  d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 18.1c-3.374 0-6.1-2.726-6.1-6.1 0-3.374 2.726-6.1 6.1-6.1 3.374 0 6.1 2.726 6.1 6.1 0 3.374-2.726 6.1-6.1 6.1zm3.95-8.95l-4.4 4.4-2.1-2.1-1.45 1.45 3.55 3.55 5.85-5.85-1.45-1.45z" />
               </svg>
               <span class="text-sm text-gray-300 ml-1">Verified Artist</span>
             </div>
             <h1 class="text-5xl font-bold text-white mt-2">{{ user.username }}</h1>
           </div>
           <!-- Pen Icon Button -->
-          <button id="editBannerButton" class="text-gray-400 hover:text-white focus:outline-none ml-4 mt-4 flex-shrink-0">
+          <button id="editBannerButton"
+            class="text-gray-400 hover:text-white focus:outline-none ml-4 mt-4 flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              <path
+                d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
             </svg>
           </button>
           <!-- End Pen Icon Button -->
         </div>
       </div>
     </div>
-<!-- Albums Section -->
-<div class="p-5">
-    <h2 class="text-2xl font-bold mb-4">Albums</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <!-- Albums Section -->
+    <div class="p-5">
+      <h2 class="text-2xl font-bold mb-4">Albums</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {% for album in albums %}
-        <div class="relative">
-            <a href="{% url 'album' %}?album_id={{ album.id }}">
-                <img src="{% if album.cover_image %} {{ album.cover_image.url }} {% else %} {% static 'Images/IUlogo.jpg' %} {% endif %}" alt="{{ album.name }}" class="w-full h-48 object-cover rounded-md">
-                <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-70 text-white p-2">
-                    <h3 class="text-sm font-semibold">{{ album.name }}</h3>
-                </div>
-            </a>
+        <div class="album-item relative">
+          <a href="{% url 'album' %}?album_id={{ album.id }}">
+            <img
+              src="{% if album.cover_image %} {{ album.cover_image.url }} {% else %} {% static 'Images/IUlogo.jpg' %} {% endif %}"
+              alt="{{ album.name }}" class="w-full h-48 object-cover rounded-md">
+            <div class="absolute bottom-0 left-0 w-full bg-black bg-opacity-70 text-white p-2">
+              <h3 class="text-sm font-semibold">{{ album.name }}</h3>
+            </div>
+          </a>
         </div>
         {% empty %}
         <p>No albums created yet.</p>
         {% endfor %}
+      </div>
     </div>
-</div>
 
-<!-- Popular Tracks Section -->
-<div class="p-5">
-  <h2 class="text-2xl font-bold mb-4">Songs</h2>
-  <div class="divide-y divide-gray-800">
-    {% for track in tracks %}
-    <!-- Single Track Row -->
-    <div class="flex justify-between items-center py-3">  <!-- Wrapper div for flex layout -->
-      <a href="{% url 'tracks' %}?track_id={{ track.id }}" class="flex items-center space-x-4 hover:bg-gray-700 py-2 px-4 rounded-md w-full">  <!-- Added link here -->
-        {% if track.album and track.album.cover_image %}
-        <img src="{{ track.album.cover_image.url }}" alt="Album Cover" class="w-12 h-12 object-cover">
-        {% else %}
-        <img src="{% static 'Images/IUlogo.jpg' %}" alt="Default Song Image" class="w-12 h-12">
-        {% endif %}
-        <div>
-          <p class="text-base font-medium">{{ track.music_name }}</p>
-          <p class="text-xs text-gray-400">{{ user.username }}</p>
-        </div>
-      </a>  <!-- Close link here -->
-      <button class="edit-songs text-gray-500 hover:text-gray-300 focus:outline-none" data-track-id="{{ track.id }}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-        </svg>
-      </button>
+    <!-- Popular Tracks Section -->
+    <div class="p-5">
+      <h2 class="text-2xl font-bold mb-4">Songs</h2>
+      <div class="divide-y divide-gray-800">
+        {% for track in tracks %}
+        <a href="{% url 'tracks' %}?track_id={{ track.id }}" class="track-row">
+          <div class="flex justify-between items-center py-3" style="margin-left: 15px;">
+            <div class="flex items-center space-x-4">
+              {% if track.album and track.album.cover_image %}
+              <img src="{{ track.album.cover_image.url }}" alt="Album Cover" class="w-12 h-12 object-cover">
+              {% else %}
+              <img src="{% static 'Images/IUlogo.jpg' %}" alt="Default Song Image" class="w-12 h-12">
+              {% endif %}
+              <div>
+                <p class="text-base font-medium">{{ track.music_name }}</p>
+                <p class="text-xs text-gray-400">{{ user.username }}</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        {% empty %}
+        <p>No songs uploaded yet.</p>
+        {% endfor %}
+      </div>
     </div>
-    {% empty %}
-    <p>No songs uploaded yet.</p>
-    {% endfor %}
-    <!-- Repeat for other tracks -->
-  </div>
-</div>
     <div id="editSongPopupOverlay" class="upload-popup-overlay" style="display: none;">
-    <div class="upload-popup">
+      <div class="upload-popup">
         <div class="upload-popup-header">
-            <h2>Edit Song</h2>
-            <button id="closeEditSongPopup" class="close-button">×</button>
+          <h2>Edit Song</h2>
+          <button id="closeEditSongPopup" class="close-button">×</button>
         </div>
         <!-- Inside the Edit Song Pop-up -->
-<form id="editSongForm" method="post" action="" enctype="multipart/form-data">
-  {% csrf_token %}
-  <input type="hidden" name="action" value="update_song">  <!-- Hidden input -->
-  <div class="form-group">
-      <label for = "{{ form.music_name.id_for_label }}">Music Name</label>
-      {{ form.music_name }}
-  </div>
-  <input type="hidden" name="track_id" value="">
-  <button type="submit" class="submit-button" name = "edit_music_name">Submit</button>
-</form>
+        <form id="editSongForm" method="post" action="" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="update_song"> <!-- Hidden input -->
+          <div class="form-group">
+            <label for="{{ form.music_name.id_for_label }}">Music Name</label>
+            {{ form.music_name }}
+          </div>
+          <input type="hidden" name="track_id" value="">
+          <button type="submit" class="submit-button" name="edit_music_name">Submit</button>
+        </form>
+      </div>
     </div>
-  </div>
-  <script>
-
-         //Pop up code
-      document.addEventListener('DOMContentLoaded', function() {
+    <script>
+      //Pop up code
+      document.addEventListener('DOMContentLoaded', function () {
         const editSongButtons = document.querySelectorAll('.edit-songs');
         const editSongPopupOverlay = document.getElementById('editSongPopupOverlay');
         const closeEditSongPopup = document.getElementById('closeEditSongPopup');
         const editSongForm = document.getElementById('editSongForm'); // Get the form
         editSongButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                editSongPopupOverlay.style.display = 'flex';
-                const trackId = button.dataset.trackId; // Get the track ID from the button
-                editSongForm.action = `/edit_song/${trackId}/`; // Set the form's action URL dynamically
-            });
+          button.addEventListener('click', () => {
+            editSongPopupOverlay.style.display = 'flex';
+            const trackId = button.dataset.trackId; // Get the track ID from the button
+            editSongForm.action = `/edit_song/${trackId}/`; // Set the form's action URL dynamically
+          });
         });
         closeEditSongPopup.addEventListener('click', () => {
-            editSongPopupOverlay.style.display = 'none';
+          editSongPopupOverlay.style.display = 'none';
         });
         window.addEventListener('click', (event) => {
-            if (event.target === editSongPopupOverlay) {
-                editSongPopupOverlay.style.display = 'none';
-            }
+          if (event.target === editSongPopupOverlay) {
+            editSongPopupOverlay.style.display = 'none';
+          }
         });
-    });
+      });
 
-  </script>
+    </script>
 
-  <!-- Upload Song Pop-up -->
+    <!-- Upload Song Pop-up -->
   <div id="uploadPopupOverlay" class="upload-popup-overlay">
     <div class="upload-popup">
       <div class="upload-popup-header">
@@ -360,6 +384,5 @@
       }
     });
   </script>
-
 </body>
 </html>

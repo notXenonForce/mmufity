@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Music, Album, ArtistAccount, UserAccount
+from .models import Music, Album, ArtistAccount, UserAccount, Playlist
 
 class MusicInline(admin.TabularInline): # This shows the music with Album list
     model = Music
@@ -29,3 +29,4 @@ admin.site.register(Music)
 admin.site.register(Album, AlbumAdmin)
 admin.site.register(ArtistAccount)
 admin.site.register(UserAccount)
+admin.site.register(Playlist)

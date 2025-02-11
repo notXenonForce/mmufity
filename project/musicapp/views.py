@@ -1,15 +1,17 @@
+# views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.models import User, auth
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import UploadSongForm, AlbumForm, BannerUploadForm, PlaylistForm, EditSongForm, UserBannerUploadForm # Import forms
-from .models import Music, Album, ArtistAccount, Playlist # Import models
+from .models import Music, Album, ArtistAccount, Playlist, Like, UserAccount # Import models
 from .validators import validate_audio_file
 from django.core.exceptions import ValidationError
 from django.db.models import Max, Min
 from django.db.models import Q
 from django.http import JsonResponse
+import traceback  # Import traceback
 
 # Helper functions for user type checks
 def is_artist(user):
@@ -111,7 +113,7 @@ def user_home(request):
 def search(request):
     return render(request, 'search.html')
 
-def music_playlist(request): 
+def music_playlist(request):
     track_id = request.GET.get('track_id')  # Get track ID from query parameters
     playlist_id = request.GET.get('playlist_id')  # Get playlist ID from query parameters #Changed variable
     selected_track = None
@@ -292,7 +294,9 @@ def signup_artist(request):
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
-    return redirect('login')
+    response = redirect('login')  # Or wherever you redirect after logout
+    response.delete_cookie('likedTracks')  # Delete the client-side cookie
+    return response
 
 # Admin home redirection
 @login_required
@@ -412,14 +416,39 @@ def artist_home(request):
 
     return render(request, 'profile.html', context)
 
+@login_required
 def artist_detail(request, pk):
     artist = get_object_or_404(ArtistAccount, pk=pk)
-    context = {'artist': artist}
+    tracks = artist.music_set.all()
+
+    if request.user.is_authenticated:
+        liked_track_ids = Like.objects.filter(user=request.user, music__in=tracks).values_list('music_id', flat=True)
+    else:
+        liked_track_ids = []
+
+    for track in tracks:
+        track.is_liked = track.id in liked_track_ids
+
+    context = {'artist': artist, 'tracks': tracks}
     return render(request, 'artist_detail.html', context)
+
+@login_required  # Ensure only logged-in users can view
 def album_detail(request, pk):
     album = get_object_or_404(Album, pk=pk)
-    context = {'album': album}
+    tracks = album.music_set.all()
+
+    if request.user.is_authenticated:
+        liked_track_ids = Like.objects.filter(user=request.user, music__in=tracks).values_list('music_id', flat=True)
+    else:
+        liked_track_ids = []
+
+    for track in tracks:
+        track.is_liked = track.id in liked_track_ids
+
+    context = {'album': album, 'tracks': tracks}  # Pass tracks to template
+
     return render(request, 'album_detail.html', context)
+
 @login_required
 def playlist_detail(request, pk):
     playlist = get_object_or_404(Playlist, pk=pk)
@@ -436,7 +465,7 @@ def search_music_for_playlist(request):
         else:
             data = []
         return JsonResponse(data, safe=False)
-    
+
 @login_required
 def add_music_to_playlist(request, pk):
     playlist = get_object_or_404(Playlist, pk=pk)
@@ -453,7 +482,7 @@ def add_music_to_playlist(request, pk):
         messages.error(request, "Invalid request method.")
 
     return redirect('playlist_detail', pk=pk)  # Redirect back to the playlist detail page
-        
+
 @login_required
 @user_passes_test(is_artist)
 def edit_song(request, track_id):
@@ -470,3 +499,39 @@ def edit_song(request, track_id):
             messages.error(request, 'There was an error updating the song.')
 
     return render(request, 'edit_song.html', {'form': form, 'track': track})
+
+@login_required
+def toggle_like(request):
+    if request.method == 'POST':
+        track_id = request.POST.get('track_id')
+        try:
+            track = get_object_or_404(Music, pk=track_id)
+            user = request.user
+
+            like, created = Like.objects.get_or_create(user=user, music=track)
+
+            if not created:
+                # Like already exists, so unlike it (delete the like)
+                like.delete()
+                track.like_count = max(0, track.like_count - 1)
+                is_liked = False  # Correct is_liked value!
+            else:
+                # Like was created, so increment like count
+                track.like_count += 1
+                is_liked = True  # Correct is_liked value!
+
+            track.save()  # SAVE THE TRACK AFTER MODIFYING like_count
+
+            return JsonResponse({
+                'status': 'success',
+                'like_count': track.like_count,
+                'is_liked': is_liked,
+            })
+
+        except Music.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Track not found'})
+        except Exception as e:
+            traceback.print_exc()  # Print the full traceback to the console
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})

@@ -8,6 +8,7 @@
     <title>{{ album.name }} - Album Details</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.4/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'profile-style.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Style for the header banner area */
         .album-header {
@@ -39,7 +40,22 @@
         }
 
         .track-row:hover {
-            background-color: rgba(255, 255, 255, 0.1); /* Lighten the background on hover */
+            background-color: rgba(255, 255, 255, 0.2); /* Lighten the background on hover */
+        }
+
+        /* Style for the liked heart */
+        .liked {
+            color: red;
+        }
+
+        .like-container {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .like-count {
+            margin-left: 0.5em; /* Space between the heart icon and the count */
         }
     </style>
 </head>
@@ -111,14 +127,18 @@
         <div class="p-5">
             <h2 class="text-2xl font-bold mb-4">Tracks</h2>
             <div class="divide-y divide-gray-800">
-                {% for track in album.music_set.all %}
+                {% for track in tracks %}
                     <a href="{% url 'album' %}?album_id={{ album.id }}" class="track-row">
-                        <div class="flex justify-between items-center py-3">
+                        <div class="flex justify-between items-center py-3" style="margin-left: 15px;">
                             <div class="flex items-center space-x-4">
                                 <div>
                                     <p class="text-base font-medium">{{ track.music_name }}</p>
                                     <p class="text-xs text-gray-400">{{ track.artist.user.username }}</p>
                                 </div>
+                            </div>
+                            <div class="like-container">
+                                <i class="fa-regular fa-heart like-button {% if track.is_liked %}liked{% endif %}" data-track-id="{{ track.id }}"></i>
+                                <span class="like-count" data-track-id="{{ track.id }}">{{ track.like_count }}</span>
                             </div>
                         </div>
                     </a>
@@ -127,51 +147,85 @@
                 {% endfor %}
             </div>
         </div>
+        {% csrf_token %}
     </div>
     <script>
-        const uploadSongForm = document.getElementById('uploadSongForm');
-    const addMusicButton = document.getElementById('add-music-button');
-    const musicUploadOverlay = document.getElementById('musicUploadOverlay');
-    const closeUploadPopup = document.getElementById('closeUploadPopup');
+        document.addEventListener('DOMContentLoaded', function() {
+            const likeButtons = document.querySelectorAll('.like-button');
 
-    addMusicButton.addEventListener('click', () => {
-        musicUploadOverlay.style.display = 'flex';
-    });
+            likeButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const trackId = this.dataset.trackId;
+                    const isLiked = this.classList.contains('liked');
+                    const likeCountSpan = document.querySelector(`.like-count[data-track-id="${trackId}"]`);
 
-    closeUploadPopup.addEventListener('click', () => {
-        musicUploadOverlay.style.display = 'none';
-    });
+                    if (!likeCountSpan) {
+                        console.error("Like count span not found for track ID:", trackId);
+                        return;
+                    }
 
-    window.addEventListener('click', (event) => {
-        if (event.target === musicUploadOverlay) {
-            musicUploadOverlay.style.display = 'none';
-        }
-    });
+                    if (isLiked) {
+                        this.classList.remove('liked');
+                    } else {
+                        this.classList.add('liked');
+                    }
 
-    uploadSongForm.addEventListener('submit', function(event) {
-        event.preventDefault();
+                    // Send AJAX request to toggle like
+                    fetch('/toggle_like/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: `track_id=${trackId}&liked=${!isLiked}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            console.log('Like toggled successfully on server.');
+                            likeCountSpan.textContent = data.like_count;  // Update from server's response
+                        } else {
+                            console.error('Error toggling like on server:', data.message);
+                            // Optionally revert the local changes if the server fails.
+                            if (isLiked) {
+                                this.classList.add('liked'); //revert the local likes
+                            } else {
+                                this.classList.remove('liked');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error sending AJAX request:', error);
+                        // Optionally revert the local changes if the server fails.
+                        if (isLiked) {
+                            this.classList.add('liked'); //revert the local likes
+                        } else {
+                            this.classList.remove('liked');
+                        }
+                    });
 
-        const formData = new FormData(this);
+                });
+            });
 
-        fetch(`/search_music/`, {  // Replace with your URL
-            method: 'POST',
-            body: formData,  // Send the FormData object
-            headers: {
-                 'X-CSRFToken': getCookie('csrftoken')  // Get CSRF token (see helper function below)
-             },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log("Music upload successful");
-                musicUploadOverlay.style.display = 'none';
-                window.location.reload();  // Reload the page to show updated playlist
-            } else {
-                // Handle error
-                console.error("Music upload error");
+            // Function to get CSRF token from cookies
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
             }
+
         });
-    });
     </script>
 </body>
 </html>
