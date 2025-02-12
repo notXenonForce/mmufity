@@ -157,25 +157,6 @@ def music_playlist(request):
 # Make sure you have the correct import statement
 @login_required(login_url='login')
 def user_home(request):
-    # Path to your static image
-    liked_songs_cover_image = 'banners/liked-songs-banner.webp'  # Replace with your actual path
-
-    # Create the "Liked Songs" playlist if it doesn't exist
-    liked_songs_playlist, created = Playlist.objects.get_or_create(
-        name="Liked Songs",
-        user=request.user.useraccount,
-        defaults={'cover_image': liked_songs_cover_image}
-    )
-
-    # If the playlist was just created, set the cover image
-    if created:
-        liked_songs_playlist.cover_image = liked_songs_cover_image
-        liked_songs_playlist.save()
-
-    # Update the "Liked Songs" playlist based on current likes
-    liked_songs = Music.objects.filter(like__user=request.user)
-    liked_songs_playlist.music_set.set(liked_songs)
-
     if request.method == 'POST':
         playlist_form = PlaylistForm(request.POST, request.FILES)
         banner_form = UserBannerUploadForm(request.POST, request.FILES, instance=request.user.useraccount)
@@ -255,6 +236,24 @@ def index(request):
             'user': request.user,  # Useful to pass username to the view
         }
 
+        # Path to your static image
+        liked_songs_cover_image = 'banners/liked-songs-banner.webp'  # Replace with your actual path
+
+        # Create the "Liked Songs" playlist if it doesn't exist
+        liked_songs_playlist, created = Playlist.objects.get_or_create(
+            name="Liked Songs",
+            user=request.user.useraccount,
+            defaults={'cover_image': liked_songs_cover_image}
+        )
+
+        # If the playlist was just created, set the cover image
+        if created:
+            liked_songs_playlist.cover_image = liked_songs_cover_image
+            liked_songs_playlist.save()
+
+        # Update the "Liked Songs" playlist based on current likes
+        liked_songs = Music.objects.filter(like__user=request.user)
+        liked_songs_playlist.music_set.set(liked_songs)
     return render(request, 'index.html', context)
 
 

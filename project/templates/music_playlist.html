@@ -13,7 +13,7 @@
     <div class="sidebar">
         <!-- Spotify Logo -->
         <div class="logo-container">
-            <a href="{% url 'artist_home' %}">
+            <a href="{% if user.is_staff %}{% url 'artist_home' %}{% else %}{% url 'index' %}{% endif %}">
                 <img src="{% static 'Images/logo.png' %}" style="width: 100%; height: auto; padding: 20px; box-sizing: border-box;">
             </a>
         </div>
@@ -26,7 +26,7 @@
             <b>Welcome, Guest</b>
             {% endif %}
             <br>
-            <a href="{% url 'artist_home' %}" class="sidebar-link">
+            <a href="{% if user.is_staff %}{% url 'artist_home' %}{% else %}{% url 'index' %}{% endif %}" class="sidebar-link">
                 <span class="sidebar-link-icon">🏠</span>
                 Home
             </a>
